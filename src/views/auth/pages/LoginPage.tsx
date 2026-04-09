@@ -8,11 +8,15 @@ import AuthLayout from "../components/AuthLayout";
 import LoginForm from "../components/LoginForm";
 
 export default function LoginPage() {
-  const { handleLogin, isLoginLoading } = useAuthActions();
+  const { handleLogin, isLoginLoading, loginError } = useAuthActions();
 
   return (
     <AuthLayout title="Sign In">
-      <LoginForm onSubmit={handleLogin} isLoading={isLoginLoading} />
+      <LoginForm
+        onSubmit={handleLogin}
+        isLoading={isLoginLoading}
+        error={loginError ?? undefined}
+      />
       <Typography
         variant="body2"
         sx={{ textAlign: "center", mt: 3, color: "text.secondary" }}

@@ -32,7 +32,7 @@ export default function AuthLayout({ children, title }: Props) {
             width={80}
             height={56}
             priority
-            style={{ height: "auto" }}
+            style={{ width: "auto", height: "auto" }}
           />
           <Typography variant="h4" sx={{ color: "text.primary", mt: 1 }}>
             SmartLift

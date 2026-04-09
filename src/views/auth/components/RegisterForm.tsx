@@ -1,9 +1,13 @@
 "use client";
 
+import { useState } from "react";
+import Alert from "@mui/material/Alert";
 import Button from "@mui/material/Button";
 import CircularProgress from "@mui/material/CircularProgress";
 import FormControl from "@mui/material/FormControl";
 import FormControlLabel from "@mui/material/FormControlLabel";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
 import InputLabel from "@mui/material/InputLabel";
 import MenuItem from "@mui/material/MenuItem";
 import Select from "@mui/material/Select";
@@ -11,13 +15,13 @@ import Stack from "@mui/material/Stack";
 import Switch from "@mui/material/Switch";
 import TextField from "@mui/material/TextField";
 import Box from "@mui/material/Box";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { Controller, useForm } from "react-hook-form";
 import { valibotResolver } from "@hookform/resolvers/valibot";
 import * as v from "valibot";
 
 import type { RegisterDto } from "../types";
-
-type RegisterFormData = RegisterDto & { confirmPassword: string };
 
 const registerSchema = v.object({
   firstName: v.pipe(v.string(), v.minLength(1, "First name is required")),
@@ -35,16 +39,20 @@ const registerSchema = v.object({
 type Props = {
   onSubmit: (data: RegisterDto) => void;
   isLoading: boolean;
+  error?: string;
 };
 
-export default function RegisterForm({ onSubmit, isLoading }: Props) {
+export default function RegisterForm({ onSubmit, isLoading, error }: Props) {
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
+
   const {
     register,
     handleSubmit,
     control,
     setError,
     formState: { errors },
-  } = useForm<RegisterFormData>({
+  } = useForm<RegisterDto>({
     resolver: valibotResolver(registerSchema),
     defaultValues: {
       firstName: "",
@@ -57,18 +65,38 @@ export default function RegisterForm({ onSubmit, isLoading }: Props) {
     },
   });
 
-  const onFormSubmit = (data: RegisterFormData) => {
+  const onFormSubmit = (data: RegisterDto) => {
     if (data.password !== data.confirmPassword) {
       setError("confirmPassword", { message: "Passwords do not match" });
       return;
     }
-    const { confirmPassword: _, ...dto } = data;
-    onSubmit(dto);
+    onSubmit(data);
   };
+
+  const passwordAdornment = (
+    show: boolean,
+    toggle: React.Dispatch<React.SetStateAction<boolean>>,
+  ) => (
+    <InputAdornment position="end">
+      <IconButton
+        aria-label={show ? "Hide password" : "Show password"}
+        onClick={() => toggle((prev) => !prev)}
+        edge="end"
+        size="small"
+      >
+        {show ? (
+          <VisibilityOffIcon fontSize="small" />
+        ) : (
+          <VisibilityIcon fontSize="small" />
+        )}
+      </IconButton>
+    </InputAdornment>
+  );
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} noValidate>
       <Stack spacing={2.5}>
+        {error && <Alert severity="error">{error}</Alert>}
         <Box
           sx={{
             display: "flex",
@@ -102,18 +130,28 @@ export default function RegisterForm({ onSubmit, isLoading }: Props) {
         <TextField
           {...register("password")}
           label="Password"
-          type="password"
+          type={showPassword ? "text" : "password"}
           autoComplete="new-password"
           error={!!errors.password}
           helperText={errors.password?.message}
+          slotProps={{
+            input: {
+              endAdornment: passwordAdornment(showPassword, setShowPassword),
+            },
+          }}
         />
         <TextField
           {...register("confirmPassword")}
           label="Confirm Password"
-          type="password"
+          type={showConfirm ? "text" : "password"}
           autoComplete="new-password"
           error={!!errors.confirmPassword}
           helperText={errors.confirmPassword?.message}
+          slotProps={{
+            input: {
+              endAdornment: passwordAdornment(showConfirm, setShowConfirm),
+            },
+          }}
         />
         <Controller
           name="accountType"

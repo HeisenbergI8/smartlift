@@ -3,7 +3,12 @@ import { createApi } from "@reduxjs/toolkit/query/react";
 import { authRtkConfig } from "@/configs/authRtkConfig";
 import { authApiService } from "@/views/auth/services/authApi";
 
-import type { AuthResponse, LoginDto, RegisterDto } from "@/views/auth/types";
+import type {
+  AuthResponse,
+  LoginDto,
+  RegisterDto,
+  User,
+} from "@/views/auth/types";
 
 export const authApi = createApi({
   ...authRtkConfig,
@@ -28,7 +33,17 @@ export const authApi = createApi({
         }
       },
     }),
+    getMe: builder.query<User, void>({
+      queryFn: async () => {
+        try {
+          const data = await authApiService.getMe();
+          return { data };
+        } catch (error) {
+          return { error: { message: (error as Error).message } };
+        }
+      },
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = authApi;
+export const { useLoginMutation, useRegisterMutation, useGetMeQuery } = authApi;

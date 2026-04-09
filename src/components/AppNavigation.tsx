@@ -1,367 +1,488 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import type { ReactNode } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import BottomNavigation from "@mui/material/BottomNavigation";
-import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
-import Divider from "@mui/material/Divider";
+import ButtonBase from "@mui/material/ButtonBase";
 import Drawer from "@mui/material/Drawer";
+import IconButton from "@mui/material/IconButton";
 import List from "@mui/material/List";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Paper from "@mui/material/Paper";
 import Stack from "@mui/material/Stack";
+import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
-import { useMediaQuery, useTheme } from "@mui/material";
-import DashboardIcon from "@mui/icons-material/Dashboard";
+import useMediaQuery from "@mui/material/useMediaQuery";
+import SpaceDashboardIcon from "@mui/icons-material/SpaceDashboard";
+import EventNoteIcon from "@mui/icons-material/EventNote";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import DirectionsRunIcon from "@mui/icons-material/DirectionsRun";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
-import HistoryIcon from "@mui/icons-material/History";
-import ListAltIcon from "@mui/icons-material/ListAlt";
-import LogoutIcon from "@mui/icons-material/Logout";
-import MoreHorizIcon from "@mui/icons-material/MoreHoriz";
-import PersonIcon from "@mui/icons-material/Person";
-import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
+import ShowChartIcon from "@mui/icons-material/ShowChart";
 import EmojiEventsIcon from "@mui/icons-material/EmojiEvents";
+import GppMaybeIcon from "@mui/icons-material/GppMaybe";
+import ScaleIcon from "@mui/icons-material/Scale";
+import LocalDiningIcon from "@mui/icons-material/LocalDining";
 import TrackChangesIcon from "@mui/icons-material/TrackChanges";
-import WarningAmberIcon from "@mui/icons-material/WarningAmber";
-import TrendingUpIcon from "@mui/icons-material/TrendingUp";
-import RestaurantMenuIcon from "@mui/icons-material/RestaurantMenu";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
-import MonitorWeightIcon from "@mui/icons-material/MonitorWeight";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-
+import LogoutIcon from "@mui/icons-material/Logout";
 import { clearAccessToken } from "@/libs/authToken";
+import { useGetMeQuery } from "@/store/services/authApi";
 
-const NAV_ITEMS = [
-  { label: "Dashboard", path: "/dashboard", icon: <DashboardIcon /> },
-  { label: "Equipment", path: "/equipment", icon: <FitnessCenterIcon /> },
-  { label: "Exercises", path: "/exercises", icon: <ListAltIcon /> },
+type NavItem = { label: string; path: string; icon: ReactNode };
+type NavGroup = { label: string; items: NavItem[] };
+type NavProps = {
+  pathname: string;
+  onNavigate: (p: string) => void;
+  onLogout: () => void;
+};
+
+const MINI_W = 72;
+const FULL_W = 260;
+
+const GROUPS: NavGroup[] = [
   {
-    label: "Muscle Focus",
-    path: "/muscle-priority",
-    icon: <TrackChangesIcon />,
+    label: "Training",
+    items: [
+      {
+        label: "Dashboard",
+        path: "/dashboard",
+        icon: <SpaceDashboardIcon fontSize="small" />,
+      },
+      {
+        label: "Plans",
+        path: "/workout-plans",
+        icon: <EventNoteIcon fontSize="small" />,
+      },
+      {
+        label: "Log",
+        path: "/workout-log",
+        icon: <AssignmentIcon fontSize="small" />,
+      },
+      {
+        label: "Exercises",
+        path: "/exercises",
+        icon: <DirectionsRunIcon fontSize="small" />,
+      },
+      {
+        label: "Equipment",
+        path: "/equipment",
+        icon: <FitnessCenterIcon fontSize="small" />,
+      },
+      {
+        label: "Muscle Focus",
+        path: "/muscle-priority",
+        icon: <TrackChangesIcon fontSize="small" />,
+      },
+    ],
   },
   {
-    label: "Workout Plans",
-    path: "/workout-plans",
-    icon: <CalendarMonthIcon />,
+    label: "Analytics",
+    items: [
+      {
+        label: "Progression",
+        path: "/progression",
+        icon: <ShowChartIcon fontSize="small" />,
+      },
+      {
+        label: "Records",
+        path: "/personal-records",
+        icon: <EmojiEventsIcon fontSize="small" />,
+      },
+      {
+        label: "Ego-Lift",
+        path: "/ego-lift",
+        icon: <GppMaybeIcon fontSize="small" />,
+      },
+      {
+        label: "Body Weight",
+        path: "/body-weight",
+        icon: <ScaleIcon fontSize="small" />,
+      },
+      {
+        label: "Nutrition",
+        path: "/nutrition",
+        icon: <LocalDiningIcon fontSize="small" />,
+      },
+      {
+        label: "Milestones",
+        path: "/milestones",
+        icon: <MilitaryTechIcon fontSize="small" />,
+      },
+    ],
   },
-  { label: "Workout Log", path: "/workout-log", icon: <HistoryIcon /> },
-  {
-    label: "Personal Records",
-    path: "/personal-records",
-    icon: <EmojiEventsIcon />,
-  },
-  { label: "Ego-Lift Alerts", path: "/ego-lift", icon: <WarningAmberIcon /> },
-  { label: "Progression", path: "/progression", icon: <TrendingUpIcon /> },
-  { label: "Nutrition", path: "/nutrition", icon: <RestaurantMenuIcon /> },
-  { label: "Body Weight", path: "/body-weight", icon: <MonitorWeightIcon /> },
-  { label: "Milestones", path: "/milestones", icon: <MilitaryTechIcon /> },
-  {
-    label: "Notifications",
-    path: "/notifications",
-    icon: <NotificationsIcon />,
-  },
-  { label: "Profile", path: "/profile", icon: <PersonIcon /> },
-] as const;
+];
 
-const MOBILE_PRIMARY_PATHS = [
-  "/dashboard",
-  "/workout-log",
-  "/workout-plans",
-  "/profile",
-] as const;
-const MOBILE_PRIMARY = NAV_ITEMS.filter((item) =>
-  (MOBILE_PRIMARY_PATHS as readonly string[]).includes(item.path),
-);
-const MOBILE_SECONDARY = NAV_ITEMS.filter(
-  (item) => !(MOBILE_PRIMARY_PATHS as readonly string[]).includes(item.path),
-);
+function matchActive(pathname: string, path: string) {
+  return pathname === path || pathname.startsWith(path + "/");
+}
 
-export default function AppNavigation() {
-  const router = useRouter();
-  const pathname = usePathname();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-  const isMini = useMediaQuery(theme.breakpoints.between("sm", "md"));
-  const [moreOpen, setMoreOpen] = useState(false);
-
-  const handleNavigate = (path: string) => {
-    router.push(path);
-    setMoreOpen(false);
+// ─── Mobile bottom bar ────────────────────────────────────────────────────────
+function MobileNav({ pathname, onNavigate, onLogout }: NavProps) {
+  const computeIdx = (p: string) => {
+    const idx = GROUPS.findIndex((g) =>
+      g.items.some((i) => matchActive(p, i.path)),
+    );
+    return idx !== -1 ? idx : 0;
   };
+  const [groupIdx, setGroupIdx] = useState(() => computeIdx(pathname));
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  const touchX = useRef(0);
 
-  const handleLogout = () => {
-    clearAccessToken();
-    router.replace("/login");
-  };
-
-  // ── Mobile: bottom nav + "More" bottom drawer ──────────────────────────────
-  if (isMobile) {
-    const activeIndex = MOBILE_PRIMARY.findIndex(
-      (item) => pathname === item.path,
-    );
-    const moreActive = MOBILE_SECONDARY.some(
-      (item) => pathname === item.path || pathname.startsWith(item.path + "/"),
-    );
-
-    return (
-      <>
-        <Paper
-          sx={{
-            position: "fixed",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 1300,
-            borderTop: "1px solid",
-            borderColor: "divider",
-          }}
-          elevation={3}
-        >
-          <BottomNavigation
-            value={moreActive ? 4 : activeIndex === -1 ? false : activeIndex}
-            onChange={(_, newValue) => {
-              if (newValue === 4) {
-                setMoreOpen((prev) => !prev);
-              } else {
-                handleNavigate(MOBILE_PRIMARY[newValue as 0 | 1 | 2 | 3].path);
-              }
-            }}
-            sx={{ bgcolor: "background.paper" }}
-          >
-            {MOBILE_PRIMARY.map((item) => (
-              <BottomNavigationAction
-                key={item.path}
-                label={item.label}
-                icon={item.icon}
-                sx={{ "&.Mui-selected": { color: "primary.main" } }}
-              />
-            ))}
-            <BottomNavigationAction
-              label="More"
-              icon={<MoreHorizIcon />}
-              sx={{ "&.Mui-selected": { color: "primary.main" } }}
-            />
-          </BottomNavigation>
-        </Paper>
-
-        <Drawer
-          anchor="bottom"
-          open={moreOpen}
-          onClose={() => setMoreOpen(false)}
-          PaperProps={{
-            sx: { borderTopLeftRadius: 16, borderTopRightRadius: 16, pb: 2 },
-          }}
-        >
-          <Box sx={{ px: 2, pt: 2, pb: 1 }}>
-            <Typography variant="subtitle2" color="text.secondary">
-              More
-            </Typography>
-          </Box>
-          <List dense>
-            {MOBILE_SECONDARY.map((item) => {
-              const isActive =
-                pathname === item.path || pathname.startsWith(item.path + "/");
-              return (
-                <ListItemButton
-                  key={item.path}
-                  selected={isActive}
-                  onClick={() => handleNavigate(item.path)}
-                  sx={{
-                    borderRadius: 1,
-                    mx: 1,
-                    "&.Mui-selected": {
-                      bgcolor: "rgba(16, 185, 129, 0.1)",
-                      color: "primary.main",
-                    },
-                  }}
-                >
-                  <ListItemIcon
-                    sx={{
-                      minWidth: 40,
-                      color: isActive ? "primary.main" : "inherit",
-                    }}
-                  >
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText primary={item.label} />
-                </ListItemButton>
-              );
-            })}
-            <Divider sx={{ my: 1 }} />
-            <ListItemButton
-              onClick={handleLogout}
-              sx={{ borderRadius: 1, mx: 1 }}
-            >
-              <ListItemIcon sx={{ minWidth: 40 }}>
-                <LogoutIcon />
-              </ListItemIcon>
-              <ListItemText primary="Sign out" />
-            </ListItemButton>
-          </List>
-        </Drawer>
-      </>
-    );
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setGroupIdx(computeIdx(pathname));
   }
 
-  // ── Tablet: 64px mini sidebar · Desktop: 240px full sidebar ───────────────
-  const sidebarWidth = isMini ? 64 : 240;
+  const group = GROUPS[groupIdx];
 
+  return (
+    <Paper
+      elevation={4}
+      sx={{
+        position: "fixed",
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1300,
+        borderTop: "1px solid",
+        borderColor: "divider",
+        bgcolor: "background.paper",
+      }}
+      onTouchStart={(e) => {
+        touchX.current = e.touches[0].clientX;
+      }}
+      onTouchEnd={(e) => {
+        const delta = touchX.current - e.changedTouches[0].clientX;
+        if (delta > 50) setGroupIdx((i) => Math.min(i + 1, GROUPS.length - 1));
+        if (delta < -50) setGroupIdx((i) => Math.max(i - 1, 0));
+      }}
+    >
+      <Stack
+        direction="row"
+        alignItems="center"
+        justifyContent="space-between"
+        sx={{ px: 2, pt: 0.75 }}
+      >
+        <Stack
+          direction="row"
+          alignItems="center"
+          gap={1}
+          sx={{ flex: 1, justifyContent: "center" }}
+        >
+          <Typography
+            sx={{
+              fontWeight: 700,
+              fontSize: 10,
+              textTransform: "uppercase",
+              color: "text.secondary",
+              letterSpacing: 1,
+            }}
+          >
+            {group.label}
+          </Typography>
+          {GROUPS.map((_, i) => (
+            <ButtonBase
+              key={i}
+              onClick={() => setGroupIdx(i)}
+              sx={{
+                width: i === groupIdx ? 18 : 6,
+                height: 6,
+                borderRadius: 999,
+                bgcolor: i === groupIdx ? "primary.main" : "action.disabled",
+                transition: "width 0.2s, background-color 0.2s",
+                minWidth: 0,
+              }}
+            />
+          ))}
+        </Stack>
+        <IconButton
+          size="small"
+          onClick={onLogout}
+          sx={{ color: "text.secondary", "&:hover": { color: "error.main" } }}
+        >
+          <LogoutIcon sx={{ fontSize: 16 }} />
+        </IconButton>
+      </Stack>
+      <Stack
+        direction="row"
+        alignItems="flex-start"
+        justifyContent="space-around"
+        sx={{ px: 1, pb: 1.5, pt: 0.5 }}
+      >
+        {group.items.map((item) => {
+          const active = matchActive(pathname, item.path);
+          return (
+            <ButtonBase
+              key={item.path}
+              onClick={() => onNavigate(item.path)}
+              sx={{
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 0.25,
+                borderRadius: 2,
+                px: 0.5,
+                py: 0.5,
+                minWidth: 52,
+              }}
+            >
+              <Box
+                sx={{
+                  width: 38,
+                  height: 38,
+                  borderRadius: 2,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  bgcolor: active ? "rgba(16,185,129,0.15)" : "transparent",
+                  color: active ? "primary.main" : "text.secondary",
+                  boxShadow: active ? "0 0 8px rgba(16,185,129,0.4)" : "none",
+                  transition: "all 0.2s",
+                }}
+              >
+                {item.icon}
+              </Box>
+              <Typography
+                sx={{
+                  fontSize: 10,
+                  fontWeight: active ? 700 : 400,
+                  color: active ? "primary.main" : "text.secondary",
+                  lineHeight: 1,
+                }}
+              >
+                {item.label}
+              </Typography>
+            </ButtonBase>
+          );
+        })}
+      </Stack>
+    </Paper>
+  );
+}
+
+// ─── Desktop / tablet sidebar ─────────────────────────────────────────────────
+function SidebarNav({
+  pathname,
+  onNavigate,
+  onLogout,
+  mini,
+}: NavProps & { mini: boolean }) {
+  const { data: me } = useGetMeQuery();
+  const displayName = me ? `${me.firstName} ${me.lastName}` : "";
+  const email = me?.email ?? "";
+  const initials = me
+    ? `${me.firstName[0]}${me.lastName[0]}`.toUpperCase()
+    : "?";
+  const w = mini ? MINI_W : FULL_W;
   return (
     <Drawer
       variant="permanent"
       sx={{
-        width: sidebarWidth,
+        width: w,
         flexShrink: 0,
         "& .MuiDrawer-paper": {
-          width: sidebarWidth,
+          width: w,
           boxSizing: "border-box",
           overflowX: "hidden",
+          bgcolor: "background.paper",
           borderRight: "1px solid",
           borderColor: "divider",
-          bgcolor: "background.paper",
-          display: "flex",
-          flexDirection: "column",
+          transition: "width 0.2s",
         },
       }}
     >
-      {/* Brand header */}
-      <Stack
-        direction="row"
-        alignItems="center"
-        sx={{
-          px: isMini ? 0 : 2,
-          height: 64,
-          gap: 1.5,
-          justifyContent: isMini ? "center" : "flex-start",
-          flexShrink: 0,
-        }}
-      >
-        <FitnessCenterIcon sx={{ color: "primary.main", flexShrink: 0 }} />
-        {!isMini && (
-          <Typography variant="h6" noWrap sx={{ color: "text.primary" }}>
-            SmartLift
-          </Typography>
-        )}
-      </Stack>
-
-      <Divider />
-
-      {/* Nav items */}
-      <List sx={{ flex: 1, pt: 1 }}>
-        {NAV_ITEMS.map((item) => {
-          const isActive =
-            pathname === item.path || pathname.startsWith(item.path + "/");
-
-          const button = (
+      <Toolbar />
+      <Box sx={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}>
+        {GROUPS.map((group) => (
+          <Box key={group.label} sx={{ mb: 1 }}>
+            {!mini && (
+              <Typography
+                sx={{
+                  px: 2,
+                  pt: 1.5,
+                  pb: 0.5,
+                  fontSize: 10,
+                  fontWeight: 700,
+                  textTransform: "uppercase",
+                  letterSpacing: 1,
+                  color: "text.disabled",
+                }}
+              >
+                {group.label}
+              </Typography>
+            )}
+            <List dense disablePadding>
+              {group.items.map((item) => {
+                const active = matchActive(pathname, item.path);
+                const btn = (
+                  <ListItemButton
+                    selected={active}
+                    onClick={() => onNavigate(item.path)}
+                    sx={{
+                      mx: 1,
+                      borderRadius: 2,
+                      mb: 0.25,
+                      justifyContent: mini ? "center" : "flex-start",
+                      pl: mini ? 0 : 1.5,
+                      borderLeft: "2px solid",
+                      borderColor: active ? "primary.main" : "transparent",
+                      "&.Mui-selected": { bgcolor: "rgba(16,185,129,0.1)" },
+                      "&.Mui-selected:hover": {
+                        bgcolor: "rgba(16,185,129,0.15)",
+                      },
+                    }}
+                  >
+                    <ListItemIcon
+                      sx={{
+                        minWidth: mini ? 0 : 36,
+                        color: active ? "primary.main" : "text.secondary",
+                        justifyContent: "center",
+                      }}
+                    >
+                      {item.icon}
+                    </ListItemIcon>
+                    {!mini && (
+                      <ListItemText
+                        primary={item.label}
+                        primaryTypographyProps={{
+                          fontSize: 14,
+                          fontWeight: active ? 600 : 400,
+                        }}
+                      />
+                    )}
+                  </ListItemButton>
+                );
+                return mini ? (
+                  <Tooltip key={item.path} title={item.label} placement="right">
+                    {btn}
+                  </Tooltip>
+                ) : (
+                  <Box key={item.path}>{btn}</Box>
+                );
+              })}
+            </List>
+          </Box>
+        ))}
+      </Box>
+      <Box sx={{ p: 1, borderTop: "1px solid", borderColor: "divider" }}>
+        {mini ? (
+          <Tooltip title={`${displayName} — Logout`} placement="right">
             <ListItemButton
-              selected={isActive}
-              onClick={() => handleNavigate(item.path)}
-              sx={{
-                mx: 0.5,
-                borderRadius: 1,
-                minHeight: 44,
-                justifyContent: isMini ? "center" : "flex-start",
-                "&.Mui-selected": {
-                  bgcolor: "rgba(16, 185, 129, 0.1)",
-                  color: "primary.main",
-                  "& .MuiListItemIcon-root": { color: "primary.main" },
-                },
-                "&:hover": { bgcolor: "rgba(16, 185, 129, 0.06)" },
-              }}
+              onClick={onLogout}
+              sx={{ borderRadius: 2, justifyContent: "center" }}
             >
-              <ListItemIcon
+              <Avatar
                 sx={{
-                  minWidth: isMini ? 0 : 36,
-                  mr: isMini ? 0 : 1.5,
-                  justifyContent: "center",
-                  color: isActive ? "primary.main" : "text.secondary",
+                  width: 32,
+                  height: 32,
+                  fontSize: 13,
+                  fontWeight: 700,
+                  bgcolor: "primary.main",
+                  color: "primary.contrastText",
                 }}
               >
-                {item.icon}
-              </ListItemIcon>
-              {!isMini && (
-                <ListItemText
-                  primary={item.label}
-                  primaryTypographyProps={{
-                    variant: "body2",
-                    fontWeight: isActive ? 600 : 400,
-                    noWrap: true,
-                  }}
-                />
-              )}
+                {initials}
+              </Avatar>
             </ListItemButton>
-          );
-
-          return isMini ? (
-            <Tooltip key={item.path} title={item.label} placement="right" arrow>
-              <span>{button}</span>
-            </Tooltip>
-          ) : (
-            <Box key={item.path}>{button}</Box>
-          );
-        })}
-      </List>
-
-      <Divider />
-
-      {/* Sign out */}
-      <Box sx={{ py: 1 }}>
-        {isMini ? (
-          <Tooltip title="Sign out" placement="right" arrow>
-            <span>
-              <ListItemButton
-                onClick={handleLogout}
-                sx={{
-                  mx: 0.5,
-                  borderRadius: 1,
-                  minHeight: 44,
-                  justifyContent: "center",
-                  "&:hover": { bgcolor: "rgba(239, 68, 68, 0.06)" },
-                }}
-              >
-                <ListItemIcon
-                  sx={{
-                    minWidth: 0,
-                    justifyContent: "center",
-                    color: "text.secondary",
-                  }}
-                >
-                  <LogoutIcon />
-                </ListItemIcon>
-              </ListItemButton>
-            </span>
           </Tooltip>
         ) : (
-          <ListItemButton
-            onClick={handleLogout}
-            sx={{
-              mx: 0.5,
-              borderRadius: 1,
-              minHeight: 44,
-              "&:hover": { bgcolor: "rgba(239, 68, 68, 0.06)" },
-            }}
+          <Stack
+            direction="row"
+            alignItems="center"
+            gap={1}
+            sx={{ px: 1, py: 0.75 }}
           >
-            <ListItemIcon
-              sx={{ minWidth: 36, mr: 1.5, color: "text.secondary" }}
-            >
-              <LogoutIcon />
-            </ListItemIcon>
-            <ListItemText
-              primary="Sign out"
-              primaryTypographyProps={{
-                variant: "body2",
-                color: "text.secondary",
-                noWrap: true,
+            <Avatar
+              sx={{
+                width: 36,
+                height: 36,
+                fontSize: 14,
+                fontWeight: 700,
+                bgcolor: "primary.main",
+                color: "primary.contrastText",
+                flexShrink: 0,
               }}
-            />
-          </ListItemButton>
+            >
+              {initials}
+            </Avatar>
+            <Box sx={{ flex: 1, minWidth: 0 }}>
+              <Typography
+                sx={{
+                  fontSize: 13,
+                  fontWeight: 700,
+                  lineHeight: 1.3,
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {displayName}
+              </Typography>
+              <Typography
+                sx={{
+                  fontSize: 11,
+                  color: "text.secondary",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {email}
+              </Typography>
+            </Box>
+            <Tooltip title="Logout">
+              <IconButton
+                size="small"
+                onClick={onLogout}
+                sx={{
+                  color: "text.secondary",
+                  "&:hover": { color: "error.main" },
+                  flexShrink: 0,
+                }}
+              >
+                <LogoutIcon sx={{ fontSize: 18 }} />
+              </IconButton>
+            </Tooltip>
+          </Stack>
         )}
       </Box>
     </Drawer>
+  );
+}
+
+// ─── Main export ──────────────────────────────────────────────────────────────
+export default function AppNavigation() {
+  const router = useRouter();
+  const pathname = usePathname();
+  const smUp = useMediaQuery("(min-width:600px)");
+  const mdUp = useMediaQuery("(min-width:900px)");
+
+  const onNavigate = (path: string) => router.push(path);
+  const onLogout = () => {
+    clearAccessToken();
+    router.replace("/login");
+  };
+
+  if (smUp) {
+    return (
+      <SidebarNav
+        pathname={pathname}
+        onNavigate={onNavigate}
+        onLogout={onLogout}
+        mini={!mdUp}
+      />
+    );
+  }
+  return (
+    <MobileNav
+      pathname={pathname}
+      onNavigate={onNavigate}
+      onLogout={onLogout}
+    />
   );
 }

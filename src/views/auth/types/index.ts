@@ -6,6 +6,7 @@ export type LoginDto = {
 export type RegisterDto = {
   email: string;
   password: string;
+  confirmPassword: string;
   firstName: string;
   lastName: string;
   isCoachMode: boolean;
@@ -24,4 +25,18 @@ export type User = {
 export type AuthResponse = {
   accessToken: string;
   user: User;
+};
+
+/** Raw shape returned by GET /auth/me */
+export type MeResponse = {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  isCoachMode: boolean;
+  isActive: boolean;
+  emailVerified: boolean;
+  lastLoginAt: string;
+  createdAt: string;
+  role: string;
 };

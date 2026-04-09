@@ -1,4 +1,4 @@
-import { getAccessToken } from "./authToken";
+import { clearAccessToken, getAccessToken } from "./authToken";
 
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3001/api/v1";
@@ -18,8 +18,13 @@ async function request<T>(
   });
 
   if (res.status === 401) {
+    clearAccessToken();
     if (typeof window !== "undefined") {
-      window.location.href = "/login";
+      const path = window.location.pathname;
+      const isAuthPage = path === "/login" || path === "/register";
+      if (!isAuthPage) {
+        window.location.href = "/login";
+      }
     }
     throw new Error("Unauthorized");
   }

@@ -8,11 +8,15 @@ import AuthLayout from "../components/AuthLayout";
 import RegisterForm from "../components/RegisterForm";
 
 export default function RegisterPage() {
-  const { handleRegister, isRegisterLoading } = useAuthActions();
+  const { handleRegister, isRegisterLoading, registerError } = useAuthActions();
 
   return (
     <AuthLayout title="Create Account">
-      <RegisterForm onSubmit={handleRegister} isLoading={isRegisterLoading} />
+      <RegisterForm
+        onSubmit={handleRegister}
+        isLoading={isRegisterLoading}
+        error={registerError ?? undefined}
+      />
       <Typography
         variant="body2"
         sx={{ textAlign: "center", mt: 3, color: "text.secondary" }}
