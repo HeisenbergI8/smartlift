@@ -40,13 +40,7 @@ const profileSchema = v.object({
   ),
   gender: v.optional(v.picklist(["male", "female", "other"])),
   fitnessGoal: v.optional(
-    v.picklist([
-      "lose_weight",
-      "build_muscle",
-      "maintain",
-      "improve_strength",
-      "improve_endurance",
-    ]),
+    v.picklist(["lose_weight", "gain_muscle", "maintain"]),
   ),
   activityLevel: v.optional(
     v.picklist([
@@ -54,11 +48,11 @@ const profileSchema = v.object({
       "lightly_active",
       "moderately_active",
       "very_active",
-      "extremely_active",
+      "extra_active",
     ]),
   ),
   trainingMethod: v.optional(
-    v.picklist(["free_weights", "machines", "bodyweight", "mixed"]),
+    v.picklist(["weight_training", "bodyweight", "hybrid"]),
   ),
   trainingDaysPerWeek: v.optional(
     v.pipe(v.number(), v.minValue(1, "Min 1 day"), v.maxValue(7, "Max 7 days")),
@@ -160,10 +154,8 @@ export default function ProfileForm({
               <InputLabel>Fitness Goal</InputLabel>
               <Select {...field} value={field.value ?? ""} label="Fitness Goal">
                 <MenuItem value="lose_weight">Lose Weight</MenuItem>
-                <MenuItem value="build_muscle">Build Muscle</MenuItem>
+                <MenuItem value="gain_muscle">Gain Muscle</MenuItem>
                 <MenuItem value="maintain">Maintain</MenuItem>
-                <MenuItem value="improve_strength">Improve Strength</MenuItem>
-                <MenuItem value="improve_endurance">Improve Endurance</MenuItem>
               </Select>
             </FormControl>
           )}
@@ -184,7 +176,7 @@ export default function ProfileForm({
                 <MenuItem value="lightly_active">Lightly Active</MenuItem>
                 <MenuItem value="moderately_active">Moderately Active</MenuItem>
                 <MenuItem value="very_active">Very Active</MenuItem>
-                <MenuItem value="extremely_active">Extremely Active</MenuItem>
+                <MenuItem value="extra_active">Extra Active</MenuItem>
               </Select>
             </FormControl>
           )}
@@ -208,10 +200,9 @@ export default function ProfileForm({
                   value={field.value ?? ""}
                   label="Training Method"
                 >
-                  <MenuItem value="free_weights">Free Weights</MenuItem>
-                  <MenuItem value="machines">Machines</MenuItem>
+                  <MenuItem value="weight_training">Weight Training</MenuItem>
                   <MenuItem value="bodyweight">Bodyweight</MenuItem>
-                  <MenuItem value="mixed">Mixed</MenuItem>
+                  <MenuItem value="hybrid">Hybrid</MenuItem>
                 </Select>
               </FormControl>
             )}

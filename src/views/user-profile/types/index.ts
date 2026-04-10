@@ -1,24 +1,15 @@
 export type Gender = "male" | "female" | "other";
 
-export type FitnessGoal =
-  | "lose_weight"
-  | "build_muscle"
-  | "maintain"
-  | "improve_strength"
-  | "improve_endurance";
+export type FitnessGoal = "lose_weight" | "gain_muscle" | "maintain";
 
 export type ActivityLevel =
   | "sedentary"
   | "lightly_active"
   | "moderately_active"
   | "very_active"
-  | "extremely_active";
+  | "extra_active";
 
-export type TrainingMethod =
-  | "free_weights"
-  | "machines"
-  | "bodyweight"
-  | "mixed";
+export type TrainingMethod = "weight_training" | "bodyweight" | "hybrid";
 
 export type UserProfile = {
   id: number;

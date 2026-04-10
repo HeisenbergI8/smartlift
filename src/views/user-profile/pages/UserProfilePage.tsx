@@ -1,5 +1,6 @@
 "use client";
 
+import Alert from "@mui/material/Alert";
 import Avatar from "@mui/material/Avatar";
 import Box from "@mui/material/Box";
 import Chip from "@mui/material/Chip";
@@ -179,7 +180,13 @@ export default function UserProfilePage() {
             <CircularProgress />
           </Box>
         ) : isError ? (
-          <ProfileForm onSubmit={handleSave} isLoading={isSaving} />
+          <>
+            <Alert severity="warning" sx={{ mb: 2.5 }}>
+              Couldn&apos;t load your profile — you can still fill in your
+              details below.
+            </Alert>
+            <ProfileForm onSubmit={handleSave} isLoading={isSaving} />
+          </>
         ) : (
           <ProfileForm
             defaultValues={defaultValues}
