@@ -41,7 +41,7 @@ type Props = {
 const CATEGORIES: { value: ExerciseCategory; label: string }[] = [
   { value: "compound", label: "Compound" },
   { value: "isolation", label: "Isolation" },
-  { value: "bodyweight", label: "Bodyweight" },
+  { value: "flexibility", label: "Flexibility" },
   { value: "cardio", label: "Cardio" },
 ];
 

@@ -5,7 +5,7 @@ export type ExerciseCategory =
   | "compound"
   | "isolation"
   | "cardio"
-  | "bodyweight";
+  | "flexibility";
 
 export type ExerciseDifficulty = "beginner" | "intermediate" | "advanced";
 
@@ -13,6 +13,7 @@ export type ExerciseMuscle = {
   id: number;
   exerciseId: number;
   muscleGroupId: number;
+  role: "primary" | "secondary";
   muscleGroup: MuscleGroup;
 };
 
@@ -29,6 +30,7 @@ export type Exercise = {
   description: string | null;
   category: ExerciseCategory;
   difficulty: ExerciseDifficulty;
+  isBodyweight: boolean;
   createdAt: string;
   updatedAt: string;
   exerciseMuscles: ExerciseMuscle[];

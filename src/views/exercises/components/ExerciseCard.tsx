@@ -26,7 +26,7 @@ const difficultyColorMap: Record<
 const categoryLabelMap: Record<string, string> = {
   compound: "Compound",
   isolation: "Isolation",
-  bodyweight: "Bodyweight",
+  flexibility: "Flexibility",
   cardio: "Cardio",
 };
 
