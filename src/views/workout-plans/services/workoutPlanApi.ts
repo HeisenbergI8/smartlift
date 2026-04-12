@@ -15,6 +15,7 @@ const ex = (id: number, name: string) => ({
   description: null,
   category: "compound" as const,
   difficulty: "intermediate" as const,
+  isBodyweight: false,
   createdAt: now,
   updatedAt: now,
   exerciseMuscles: [],
