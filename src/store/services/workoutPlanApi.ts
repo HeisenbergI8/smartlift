@@ -4,6 +4,7 @@ import { workoutPlanRtkConfig } from "@/configs/workoutPlanRtkConfig";
 import { workoutPlanApiService } from "@/views/workout-plans/services/workoutPlanApi";
 import type {
   CreateWorkoutPlanDto,
+  GenerateWorkoutPlanDto,
   UpdateWorkoutPlanDto,
   WorkoutPlan,
 } from "@/views/workout-plans/types";
@@ -23,6 +24,18 @@ export const workoutPlanApi = createApi({
         }
       },
       providesTags: [{ type: "WorkoutPlans", id: "LIST" }],
+    }),
+
+    getActivePlan: build.query<WorkoutPlan, void>({
+      queryFn: async () => {
+        try {
+          const data = await workoutPlanApiService.findActive();
+          return { data };
+        } catch (error) {
+          return { error: { message: (error as Error).message } };
+        }
+      },
+      providesTags: [{ type: "WorkoutPlans", id: "ACTIVE" }],
     }),
 
     getWorkoutPlan: build.query<WorkoutPlan, number>({
@@ -76,14 +89,32 @@ export const workoutPlanApi = createApi({
           return { error: { message: (error as Error).message } };
         }
       },
-      invalidatesTags: [{ type: "WorkoutPlans", id: "LIST" }],
+      invalidatesTags: [
+        { type: "WorkoutPlans", id: "LIST" },
+        { type: "WorkoutPlans", id: "ACTIVE" },
+      ],
     }),
 
-    deleteWorkoutPlan: build.mutation<{ message: string }, number>({
+    generateWorkoutPlan: build.mutation<WorkoutPlan, GenerateWorkoutPlanDto>({
+      queryFn: async (dto) => {
+        try {
+          const data = await workoutPlanApiService.generate(dto);
+          return { data };
+        } catch (error) {
+          return { error: { message: (error as Error).message } };
+        }
+      },
+      invalidatesTags: [
+        { type: "WorkoutPlans", id: "LIST" },
+        { type: "WorkoutPlans", id: "ACTIVE" },
+      ],
+    }),
+
+    deleteWorkoutPlan: build.mutation<void, number>({
       queryFn: async (id) => {
         try {
-          const data = await workoutPlanApiService.remove(id);
-          return { data };
+          await workoutPlanApiService.remove(id);
+          return { data: undefined };
         } catch (error) {
           return { error: { message: (error as Error).message } };
         }
@@ -91,6 +122,7 @@ export const workoutPlanApi = createApi({
       invalidatesTags: (_result, _error, id) => [
         { type: "WorkoutPlans", id },
         { type: "WorkoutPlans", id: "LIST" },
+        { type: "WorkoutPlans", id: "ACTIVE" },
       ],
     }),
   }),
@@ -98,9 +130,11 @@ export const workoutPlanApi = createApi({
 
 export const {
   useGetWorkoutPlansQuery,
+  useGetActivePlanQuery,
   useGetWorkoutPlanQuery,
   useCreateWorkoutPlanMutation,
   useUpdateWorkoutPlanMutation,
   useActivateWorkoutPlanMutation,
+  useGenerateWorkoutPlanMutation,
   useDeleteWorkoutPlanMutation,
 } = workoutPlanApi;

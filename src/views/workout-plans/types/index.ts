@@ -1,17 +1,12 @@
 import type { Exercise } from "@/views/exercises/types";
 
-export type TrainingGoal =
-  | "strength"
-  | "hypertrophy"
-  | "endurance"
-  | "weight_loss"
-  | "general_fitness";
+export type TrainingGoal = "strength" | "hypertrophy" | "endurance" | "general";
 
 export type PlanSource = "user" | "system";
 
 export type WorkoutPlanExercise = {
   id: number;
-  dayId: number;
+  workoutPlanDayId: number;
   exerciseId: number;
   sortOrder: number;
   targetSets: number;
@@ -26,11 +21,11 @@ export type WorkoutPlanExercise = {
 
 export type WorkoutPlanDay = {
   id: number;
-  planId: number;
+  workoutPlanId: number;
   dayNumber: number;
   name: string | null;
   isRestDay: boolean;
-  workoutPlanExercises: WorkoutPlanExercise[];
+  exercises: WorkoutPlanExercise[];
 };
 
 export type WorkoutPlan = {
@@ -42,11 +37,12 @@ export type WorkoutPlan = {
   daysPerWeek: number;
   durationWeeks: number;
   startedAt: string | null;
+  endedAt: string | null;
   isActive: boolean;
   source: PlanSource;
   createdAt: string;
   updatedAt: string;
-  workoutPlanDays: WorkoutPlanDay[];
+  days: WorkoutPlanDay[];
 };
 
 export type CreateWorkoutPlanDayExerciseDto = {
@@ -85,4 +81,10 @@ export type UpdateWorkoutPlanDto = {
   daysPerWeek?: number;
   durationWeeks?: number;
   startedAt?: string;
+};
+
+export type GenerateWorkoutPlanDto = {
+  name?: string;
+  trainingGoalOverride?: TrainingGoal;
+  daysPerWeekOverride?: number;
 };
