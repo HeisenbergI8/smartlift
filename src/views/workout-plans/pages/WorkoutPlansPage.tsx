@@ -1,6 +1,7 @@
 "use client";
 
 import AddIcon from "@mui/icons-material/Add";
+import AutoAwesomeIcon from "@mui/icons-material/AutoAwesome";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
@@ -22,6 +23,7 @@ import { useGetWorkoutPlansQuery } from "@/store/services/workoutPlanApi";
 
 import WorkoutPlanCard from "../components/WorkoutPlanCard";
 import WorkoutPlanDialog from "../components/WorkoutPlanDialog";
+import GeneratePlanDialog from "../components/GeneratePlanDialog";
 import { useWorkoutPlanActions } from "../hooks/useWorkoutPlanActions";
 
 export default function WorkoutPlansPage() {
@@ -32,9 +34,11 @@ export default function WorkoutPlansPage() {
     dialogOpen,
     editTarget,
     deleteId,
+    generateDialogOpen,
     isCreating,
     isUpdating,
     isActivating,
+    isGenerating,
     isDeleting,
     openCreate,
     openEdit,
@@ -42,6 +46,9 @@ export default function WorkoutPlansPage() {
     handleCreate,
     handleUpdate,
     handleActivate,
+    openGenerate,
+    closeGenerate,
+    handleGenerate,
     confirmDelete,
     cancelDelete,
     handleDelete,
@@ -77,13 +84,22 @@ export default function WorkoutPlansPage() {
               programming
             </Typography>
           </Box>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={openCreate}
-          >
-            New Plan
-          </Button>
+          <Stack direction="row" gap={1} flexWrap="wrap">
+            <Button
+              variant="outlined"
+              startIcon={<AutoAwesomeIcon />}
+              onClick={openGenerate}
+            >
+              Auto-Generate
+            </Button>
+            <Button
+              variant="contained"
+              startIcon={<AddIcon />}
+              onClick={openCreate}
+            >
+              New Plan
+            </Button>
+          </Stack>
         </Stack>
 
         {/* Active plan banner */}
@@ -185,6 +201,7 @@ export default function WorkoutPlansPage() {
               <Grid key={plan.id} size={{ xs: 12, sm: 6, md: 4 }}>
                 <WorkoutPlanCard
                   plan={plan}
+                  isActivePlan={plan.id === activePlan?.id}
                   onEdit={openEdit}
                   onDelete={confirmDelete}
                   onActivate={handleActivate}
@@ -204,6 +221,14 @@ export default function WorkoutPlansPage() {
         onClose={closeDialog}
         onCreate={handleCreate}
         onUpdate={handleUpdate}
+      />
+
+      {/* Auto-generate dialog */}
+      <GeneratePlanDialog
+        open={generateDialogOpen}
+        isSubmitting={isGenerating}
+        onClose={closeGenerate}
+        onGenerate={handleGenerate}
       />
 
       {/* Delete confirm dialog */}

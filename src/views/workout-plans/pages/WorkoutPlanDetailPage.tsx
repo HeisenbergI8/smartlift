@@ -31,8 +31,7 @@ const GOAL_COLOR_MAP: Record<
   strength: "error",
   hypertrophy: "primary",
   endurance: "info",
-  weight_loss: "warning",
-  general_fitness: "success",
+  general: "success",
 };
 
 type WorkoutPlanDetailPageProps = {
@@ -116,9 +115,7 @@ export default function WorkoutPlanDetailPage({
   }
 
   const goalLabel = plan.trainingGoal.replace(/_/g, " ");
-  const sortedDays = [...plan.workoutPlanDays].sort(
-    (a, b) => a.dayNumber - b.dayNumber,
-  );
+  const sortedDays = [...plan.days].sort((a, b) => a.dayNumber - b.dayNumber);
 
   return (
     <Box

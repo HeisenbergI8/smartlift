@@ -35,7 +35,7 @@ export default function WorkoutPlanDayAccordion({
     ? `Day ${day.dayNumber} — Rest Day`
     : `Day ${day.dayNumber}${day.name ? ` — ${day.name}` : ""}`;
 
-  const sortedExercises = [...day.workoutPlanExercises].sort(
+  const sortedExercises = [...day.exercises].sort(
     (a, b) => a.sortOrder - b.sortOrder,
   );
 
@@ -53,10 +53,10 @@ export default function WorkoutPlanDayAccordion({
               variant="outlined"
             />
           )}
-          {!day.isRestDay && day.workoutPlanExercises.length > 0 && (
+          {!day.isRestDay && day.exercises.length > 0 && (
             <Chip
               size="small"
-              label={`${day.workoutPlanExercises.length} exercises`}
+              label={`${day.exercises.length} exercises`}
               color="primary"
               variant="outlined"
             />
@@ -65,7 +65,7 @@ export default function WorkoutPlanDayAccordion({
       </AccordionSummary>
 
       <AccordionDetails sx={{ p: 0 }}>
-        {day.isRestDay || day.workoutPlanExercises.length === 0 ? (
+        {day.isRestDay || day.exercises.length === 0 ? (
           <Typography
             variant="body2"
             color="text.secondary"

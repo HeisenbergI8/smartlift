@@ -3,7 +3,9 @@
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
+import PersonIcon from "@mui/icons-material/Person";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import SmartToyIcon from "@mui/icons-material/SmartToy";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
@@ -16,6 +18,8 @@ import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { useRouter } from "next/navigation";
 
+import type React from "react";
+
 import type { WorkoutPlan } from "../types";
 
 const GOAL_COLOR_MAP: Record<
@@ -25,12 +29,32 @@ const GOAL_COLOR_MAP: Record<
   strength: "error",
   hypertrophy: "primary",
   endurance: "info",
-  weight_loss: "warning",
-  general_fitness: "success",
+  general: "success",
+};
+
+const SOURCE_CONFIG: Record<
+  string,
+  {
+    label: string;
+    color: "default" | "secondary" | "warning";
+    icon: React.ReactNode;
+  }
+> = {
+  user: {
+    label: "Self-created",
+    color: "default",
+    icon: <PersonIcon sx={{ fontSize: 14 }} />,
+  },
+  system: {
+    label: "System",
+    color: "secondary",
+    icon: <SmartToyIcon sx={{ fontSize: 14 }} />,
+  },
 };
 
 type WorkoutPlanCardProps = {
   plan: WorkoutPlan;
+  isActivePlan: boolean;
   onEdit: (plan: WorkoutPlan) => void;
   onDelete: (id: number) => void;
   onActivate: (id: number) => void;
@@ -39,6 +63,7 @@ type WorkoutPlanCardProps = {
 
 export default function WorkoutPlanCard({
   plan,
+  isActivePlan,
   onEdit,
   onDelete,
   onActivate,
@@ -83,6 +108,18 @@ export default function WorkoutPlanCard({
             color={GOAL_COLOR_MAP[plan.trainingGoal] ?? "default"}
             label={goalLabel.charAt(0).toUpperCase() + goalLabel.slice(1)}
           />
+          {(() => {
+            const src = SOURCE_CONFIG[plan.source];
+            return src ? (
+              <Chip
+                size="small"
+                color={src.color}
+                variant="outlined"
+                icon={src.icon as React.ReactElement}
+                label={src.label}
+              />
+            ) : null;
+          })()}
         </Stack>
 
         {plan.description && (
@@ -126,14 +163,12 @@ export default function WorkoutPlanCard({
       <Divider />
 
       <CardActions sx={{ justifyContent: "space-between", px: 1.5 }}>
-        <Tooltip
-          title={plan.isActive ? "Already active" : "Set as active plan"}
-        >
+        <Tooltip title={isActivePlan ? "Already active" : "Activate"}>
           <span>
             <IconButton
               size="small"
-              color="success"
-              disabled={plan.isActive || isActivating}
+              color={isActivePlan ? "success" : "default"}
+              disabled={isActivePlan || isActivating}
               onClick={() => onActivate(plan.id)}
             >
               <PlayArrowIcon fontSize="small" />

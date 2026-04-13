@@ -4,10 +4,12 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import Divider from "@mui/material/Divider";
 import FormControl from "@mui/material/FormControl";
 import FormHelperText from "@mui/material/FormHelperText";
 import InputLabel from "@mui/material/InputLabel";
@@ -18,25 +20,28 @@ import TextField from "@mui/material/TextField";
 
 import type {
   CreateWorkoutPlanDto,
+  CreateWorkoutPlanDayDto,
   TrainingGoal,
   UpdateWorkoutPlanDto,
   WorkoutPlan,
 } from "../types";
+import WorkoutPlanDayForm from "./WorkoutPlanDayForm";
 
 const TRAINING_GOALS: { value: TrainingGoal; label: string }[] = [
   { value: "strength", label: "Strength" },
   { value: "hypertrophy", label: "Hypertrophy" },
   { value: "endurance", label: "Endurance" },
-  { value: "weight_loss", label: "Weight Loss" },
-  { value: "general_fitness", label: "General Fitness" },
+  { value: "general", label: "General" },
 ];
 
-type FormValues = {
+export type PlanFormValues = {
   name: string;
   description: string;
   trainingGoal: TrainingGoal;
   daysPerWeek: number;
   durationWeeks: number;
+  startedAt: string;
+  days: CreateWorkoutPlanDayDto[];
 };
 
 type WorkoutPlanDialogProps = {
@@ -62,14 +67,17 @@ export default function WorkoutPlanDialog({
     control,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
-  } = useForm<FormValues>({
+  } = useForm<PlanFormValues>({
     defaultValues: {
       name: "",
       description: "",
-      trainingGoal: "general_fitness",
+      trainingGoal: "general",
       daysPerWeek: 3,
       durationWeeks: 8,
+      startedAt: "",
+      days: [],
     },
   });
 
@@ -78,14 +86,16 @@ export default function WorkoutPlanDialog({
       reset({
         name: editTarget?.name ?? "",
         description: editTarget?.description ?? "",
-        trainingGoal: editTarget?.trainingGoal ?? "general_fitness",
+        trainingGoal: editTarget?.trainingGoal ?? "general",
         daysPerWeek: editTarget?.daysPerWeek ?? 3,
         durationWeeks: editTarget?.durationWeeks ?? 8,
+        startedAt: editTarget?.startedAt?.split("T")[0] ?? "",
+        days: [],
       });
     }
   }, [open, editTarget, reset]);
 
-  const onSubmit = (values: FormValues) => {
+  const onSubmit = (values: PlanFormValues) => {
     if (isEdit && editTarget) {
       onUpdate(editTarget.id, {
         name: values.name,
@@ -93,27 +103,55 @@ export default function WorkoutPlanDialog({
         trainingGoal: values.trainingGoal,
         daysPerWeek: values.daysPerWeek,
         durationWeeks: values.durationWeeks,
+        startedAt: values.startedAt || undefined,
       });
     } else {
+      const days: CreateWorkoutPlanDayDto[] = values.days.map((d) => ({
+        dayNumber: d.dayNumber,
+        name: d.name || undefined,
+        isRestDay: d.isRestDay,
+        exercises: d.isRestDay
+          ? []
+          : (d.exercises ?? []).map((ex, i) => ({
+              exerciseId: ex.exerciseId,
+              sortOrder: ex.sortOrder ?? i + 1,
+              targetSets: ex.targetSets,
+              targetRepsMin: ex.targetRepsMin,
+              targetRepsMax: ex.targetRepsMax,
+              targetWeightKg: ex.targetWeightKg,
+              targetRpe: ex.targetRpe,
+              restSeconds: ex.restSeconds,
+              notes: ex.notes || undefined,
+            })),
+      }));
+
       onCreate({
         name: values.name,
         description: values.description || undefined,
         trainingGoal: values.trainingGoal,
         daysPerWeek: values.daysPerWeek,
         durationWeeks: values.durationWeeks,
-        days: [],
+        startedAt: values.startedAt || undefined,
+        days,
       });
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
+    <Dialog
+      open={open}
+      onClose={onClose}
+      maxWidth="md"
+      fullWidth
+      PaperProps={{ sx: { maxHeight: "90vh" } }}
+    >
       <DialogTitle>
         {isEdit ? "Edit Workout Plan" : "New Workout Plan"}
       </DialogTitle>
       <form onSubmit={handleSubmit(onSubmit)}>
-        <DialogContent>
-          <Stack gap={2.5} pt={0.5}>
+        <DialogContent dividers>
+          <Stack gap={2.5}>
+            {/* Plan info */}
             <Controller
               name="name"
               control={control}
@@ -125,6 +163,20 @@ export default function WorkoutPlanDialog({
                   fullWidth
                   error={!!errors.name}
                   helperText={errors.name?.message}
+                />
+              )}
+            />
+
+            <Controller
+              name="description"
+              control={control}
+              render={({ field }) => (
+                <TextField
+                  {...field}
+                  label="Description"
+                  fullWidth
+                  multiline
+                  rows={2}
                 />
               )}
             />
@@ -152,7 +204,7 @@ export default function WorkoutPlanDialog({
               )}
             />
 
-            <Stack direction="row" gap={2}>
+            <Stack direction="row" gap={2} flexWrap="wrap">
               <Controller
                 name="daysPerWeek"
                 control={control}
@@ -162,7 +214,10 @@ export default function WorkoutPlanDialog({
                   max: { value: 7, message: "Max 7" },
                 }}
                 render={({ field }) => (
-                  <FormControl fullWidth error={!!errors.daysPerWeek}>
+                  <FormControl
+                    sx={{ minWidth: 140 }}
+                    error={!!errors.daysPerWeek}
+                  >
                     <InputLabel>Days / Week</InputLabel>
                     <Select {...field} label="Days / Week">
                       {[1, 2, 3, 4, 5, 6, 7].map((n) => (
@@ -192,7 +247,7 @@ export default function WorkoutPlanDialog({
                     {...field}
                     label="Duration (weeks)"
                     type="number"
-                    fullWidth
+                    sx={{ minWidth: 160 }}
                     error={!!errors.durationWeeks}
                     helperText={errors.durationWeeks?.message}
                     slotProps={{ htmlInput: { min: 1 } }}
@@ -202,29 +257,54 @@ export default function WorkoutPlanDialog({
                   />
                 )}
               />
+
+              <Controller
+                name="startedAt"
+                control={control}
+                render={({ field }) => (
+                  <TextField
+                    {...field}
+                    label="Start Date"
+                    type="date"
+                    sx={{ minWidth: 170 }}
+                    slotProps={{
+                      inputLabel: { shrink: true },
+                      htmlInput: { style: { colorScheme: "dark" } },
+                    }}
+                  />
+                )}
+              />
             </Stack>
 
-            <Controller
-              name="description"
-              control={control}
-              render={({ field }) => (
-                <TextField
-                  {...field}
-                  label="Description (optional)"
-                  fullWidth
-                  multiline
-                  rows={3}
-                />
-              )}
-            />
+            {/* Days — create only */}
+            {!isEdit && (
+              <>
+                <Divider />
+                <WorkoutPlanDayForm control={control} watch={watch} />
+              </>
+            )}
           </Stack>
         </DialogContent>
+
         <DialogActions>
           <Button onClick={onClose} disabled={isSubmitting}>
             Cancel
           </Button>
-          <Button type="submit" variant="contained" disabled={isSubmitting}>
-            {isSubmitting ? "Saving…" : isEdit ? "Save Changes" : "Create Plan"}
+          <Button
+            type="submit"
+            variant="contained"
+            disabled={isSubmitting}
+            startIcon={
+              isSubmitting ? <CircularProgress size={14} /> : undefined
+            }
+          >
+            {isSubmitting
+              ? isEdit
+                ? "Saving…"
+                : "Creating…"
+              : isEdit
+                ? "Save Changes"
+                : "Create Plan"}
           </Button>
         </DialogActions>
       </form>

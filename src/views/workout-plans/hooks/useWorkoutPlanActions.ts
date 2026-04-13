@@ -6,10 +6,12 @@ import {
   useActivateWorkoutPlanMutation,
   useCreateWorkoutPlanMutation,
   useDeleteWorkoutPlanMutation,
+  useGenerateWorkoutPlanMutation,
   useUpdateWorkoutPlanMutation,
 } from "@/store/services/workoutPlanApi";
 import type {
   CreateWorkoutPlanDto,
+  GenerateWorkoutPlanDto,
   UpdateWorkoutPlanDto,
   WorkoutPlan,
 } from "../types";
@@ -18,6 +20,7 @@ export function useWorkoutPlanActions() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editTarget, setEditTarget] = useState<WorkoutPlan | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+  const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
 
   const [createWorkoutPlan, { isLoading: isCreating }] =
     useCreateWorkoutPlanMutation();
@@ -25,6 +28,8 @@ export function useWorkoutPlanActions() {
     useUpdateWorkoutPlanMutation();
   const [activateWorkoutPlan, { isLoading: isActivating }] =
     useActivateWorkoutPlanMutation();
+  const [generateWorkoutPlan, { isLoading: isGenerating }] =
+    useGenerateWorkoutPlanMutation();
   const [deleteWorkoutPlan, { isLoading: isDeleting }] =
     useDeleteWorkoutPlanMutation();
 
@@ -72,15 +77,30 @@ export function useWorkoutPlanActions() {
     }
   };
 
+  const openGenerate = () => setGenerateDialogOpen(true);
+  const closeGenerate = () => setGenerateDialogOpen(false);
+
+  const handleGenerate = async (dto: GenerateWorkoutPlanDto) => {
+    try {
+      const plan = await generateWorkoutPlan(dto).unwrap();
+      toast.success(`"${plan.name}" generated and activated`);
+      closeGenerate();
+    } catch (err) {
+      const msg = (err as { message?: string }).message;
+      toast.error(msg ?? "Failed to generate workout plan");
+    }
+  };
+
   const confirmDelete = (id: number) => setDeleteId(id);
   const cancelDelete = () => setDeleteId(null);
 
   const handleDelete = async () => {
     if (deleteId === null) return;
+    const idToDelete = deleteId;
+    setDeleteId(null);
     try {
-      await deleteWorkoutPlan(deleteId).unwrap();
+      await deleteWorkoutPlan(idToDelete).unwrap();
       toast.success("Workout plan deleted");
-      setDeleteId(null);
     } catch {
       toast.error("Failed to delete workout plan");
     }
@@ -90,9 +110,11 @@ export function useWorkoutPlanActions() {
     dialogOpen,
     editTarget,
     deleteId,
+    generateDialogOpen,
     isCreating,
     isUpdating,
     isActivating,
+    isGenerating,
     isDeleting,
     openCreate,
     openEdit,
@@ -100,6 +122,9 @@ export function useWorkoutPlanActions() {
     handleCreate,
     handleUpdate,
     handleActivate,
+    openGenerate,
+    closeGenerate,
+    handleGenerate,
     confirmDelete,
     cancelDelete,
     handleDelete,
