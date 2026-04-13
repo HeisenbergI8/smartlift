@@ -14,6 +14,18 @@ export type UserMusclePriority = {
   updatedAt: string;
 };
 
+export type MusclePrioritiesResponse = {
+  data: UserMusclePriority[];
+  total: number;
+  page: number;
+  limit: number;
+};
+
+export type GetMusclePrioritiesParams = {
+  page?: number;
+  limit?: number;
+};
+
 export type UpsertMusclePriorityDto = {
   muscleGroupId: number;
   priorityLevel?: PriorityLevel;
