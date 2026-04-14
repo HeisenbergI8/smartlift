@@ -16,22 +16,7 @@ import TextField from "@mui/material/TextField";
 
 import type { LogSetDto } from "../types";
 
-const EXERCISE_OPTIONS = [
-  { id: 1, name: "Barbell Bench Press" },
-  { id: 2, name: "Barbell Back Squat" },
-  { id: 3, name: "Conventional Deadlift" },
-  { id: 4, name: "Overhead Press" },
-  { id: 5, name: "Pull-up" },
-  { id: 6, name: "Dumbbell Bicep Curl" },
-  { id: 7, name: "Tricep Pushdown" },
-  { id: 8, name: "Leg Press" },
-  { id: 9, name: "Romanian Deadlift" },
-  { id: 10, name: "Lat Pulldown" },
-  { id: 11, name: "Dumbbell Lateral Raise" },
-  { id: 12, name: "Cable Fly" },
-  { id: 13, name: "Plank" },
-  { id: 14, name: "Kettlebell Swing" },
-];
+type ExerciseOption = { id: number; name: string };
 
 const RPE_OPTIONS = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
 
@@ -49,6 +34,7 @@ type Props = {
   open: boolean;
   isSubmitting: boolean;
   nextSetNumber: number;
+  exercises: ExerciseOption[];
   onClose: () => void;
   onSubmit: (dto: LogSetDto) => void;
 };
@@ -57,6 +43,7 @@ export default function LogSetDialog({
   open,
   isSubmitting,
   nextSetNumber,
+  exercises,
   onClose,
   onSubmit,
 }: Props) {
@@ -127,7 +114,7 @@ export default function LogSetDialog({
                 helperText={errors.exerciseId?.message}
                 fullWidth
               >
-                {EXERCISE_OPTIONS.map((ex) => (
+                {exercises.map((ex) => (
                   <MenuItem key={ex.id} value={String(ex.id)}>
                     {ex.name}
                   </MenuItem>

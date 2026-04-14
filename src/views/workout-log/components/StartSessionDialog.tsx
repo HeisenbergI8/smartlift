@@ -7,9 +7,12 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import MenuItem from "@mui/material/MenuItem";
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
 
+import type { WorkoutPlanDay } from "@/views/workout-plans/types";
 import type { StartSessionDto } from "../types";
 
 type FormValues = {
@@ -20,6 +23,8 @@ type FormValues = {
 type Props = {
   open: boolean;
   isSubmitting: boolean;
+  activePlanDays: WorkoutPlanDay[];
+  activePlanName: string | null;
   onClose: () => void;
   onStart: (dto: StartSessionDto) => void;
 };
@@ -27,6 +32,8 @@ type Props = {
 export default function StartSessionDialog({
   open,
   isSubmitting,
+  activePlanDays,
+  activePlanName,
   onClose,
   onStart,
 }: Props) {
@@ -53,6 +60,8 @@ export default function StartSessionDialog({
     onStart(dto);
   };
 
+  const hasPlanDays = activePlanDays.length > 0;
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle>Start Workout Session</DialogTitle>
@@ -70,16 +79,30 @@ export default function StartSessionDialog({
             render={({ field }) => (
               <TextField
                 {...field}
-                label="Workout Plan Day ID (optional)"
-                type="number"
-                inputProps={{ min: 1 }}
+                select
+                label="Workout Day"
                 error={!!errors.workoutPlanDayId}
                 helperText={
                   errors.workoutPlanDayId?.message ??
-                  "Leave blank for a free session"
+                  (hasPlanDays
+                    ? `From active plan: ${activePlanName}`
+                    : "No active plan — starting a free session")
                 }
                 fullWidth
-              />
+              >
+                <MenuItem value="">
+                  <Typography variant="body2" color="text.secondary">
+                    Free session (no plan)
+                  </Typography>
+                </MenuItem>
+                {activePlanDays.map((day) => (
+                  <MenuItem key={day.id} value={String(day.id)}>
+                    {day.name
+                      ? `Day ${day.dayNumber} — ${day.name}`
+                      : `Day ${day.dayNumber}`}
+                  </MenuItem>
+                ))}
+              </TextField>
             )}
           />
           <Controller

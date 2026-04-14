@@ -2,12 +2,14 @@ import { useState } from "react";
 
 import { toast } from "react-toastify";
 
+import { useGetActivePlanQuery } from "@/store/services/workoutPlanApi";
 import {
   useDeleteWorkoutSessionMutation,
   useGetWorkoutSessionsQuery,
   useStartWorkoutSessionMutation,
 } from "@/store/services/workoutLogApi";
 import type { SessionStatus, StartSessionDto } from "../types";
+import type { WorkoutPlanDay } from "@/views/workout-plans/types";
 
 export function useWorkoutLogActions() {
   const [page, setPage] = useState(1);
@@ -15,6 +17,11 @@ export function useWorkoutLogActions() {
   const [statusFilter, setStatusFilter] = useState<SessionStatus | "">("");
   const [startDialogOpen, setStartDialogOpen] = useState(false);
   const [deleteId, setDeleteId] = useState<number | null>(null);
+
+  const { data: activePlan } = useGetActivePlanQuery();
+
+  const activePlanDays: WorkoutPlanDay[] =
+    activePlan?.days?.filter((d) => !d.isRestDay) ?? [];
 
   const { data, isLoading, isFetching } = useGetWorkoutSessionsQuery({
     page,
@@ -68,6 +75,8 @@ export function useWorkoutLogActions() {
     isDeleting,
     startDialogOpen,
     deleteId,
+    activePlanDays,
+    activePlanName: activePlan?.name ?? null,
     setPage,
     setLimit,
     handleStatusFilter,

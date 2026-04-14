@@ -10,9 +10,14 @@ export type WorkoutSet = {
   rpe: number | null;
   isWarmup: boolean;
   notes: string | null;
+  performedAt: string;
   exercise: {
     id: number;
     name: string;
+    description: string | null;
+    category: string;
+    difficulty: string;
+    isBodyweight: boolean;
   };
 };
 
@@ -25,7 +30,7 @@ export type WorkoutSession = {
   startedAt: string;
   completedAt: string | null;
   durationMinutes: number | null;
-  workoutSets: WorkoutSet[];
+  sets: WorkoutSet[];
 };
 
 export type SessionsResponse = {

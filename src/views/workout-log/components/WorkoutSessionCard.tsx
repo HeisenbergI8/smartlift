@@ -105,7 +105,7 @@ export default function WorkoutSessionCard({ session, onDelete }: Props) {
           <Chip
             size="small"
             variant="outlined"
-            label={`${session.workoutSets.length} set${session.workoutSets.length !== 1 ? "s" : ""}`}
+            label={`${session.sets.length} set${session.sets.length !== 1 ? "s" : ""}`}
           />
         </Stack>
 

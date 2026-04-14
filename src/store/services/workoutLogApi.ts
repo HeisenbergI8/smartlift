@@ -92,11 +92,11 @@ export const workoutLogApi = createApi({
       ],
     }),
 
-    deleteWorkoutSession: build.mutation<{ message: string }, number>({
+    deleteWorkoutSession: build.mutation<null, number>({
       queryFn: async (id) => {
         try {
-          const data = await workoutLogApiService.deleteSession(id);
-          return { data };
+          await workoutLogApiService.deleteSession(id);
+          return { data: null };
         } catch (error) {
           return { error: { message: (error as Error).message } };
         }

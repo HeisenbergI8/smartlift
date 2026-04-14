@@ -2,6 +2,8 @@ import { useState } from "react";
 
 import { toast } from "react-toastify";
 
+import { useGetActivePlanQuery } from "@/store/services/workoutPlanApi";
+import { useGetExercisesQuery } from "@/store/services/exerciseApi";
 import {
   useCompleteWorkoutSessionMutation,
   useDeleteWorkoutSessionMutation,
@@ -9,6 +11,8 @@ import {
   useLogWorkoutSetMutation,
 } from "@/store/services/workoutLogApi";
 import type { CompleteSessionDto, LogSetDto } from "../types";
+
+export type ExerciseOption = { id: number; name: string };
 
 export function useWorkoutSessionActions(sessionId: number) {
   const [logSetDialogOpen, setLogSetDialogOpen] = useState(false);
@@ -20,6 +24,24 @@ export function useWorkoutSessionActions(sessionId: number) {
     isLoading,
     isError,
   } = useGetWorkoutSessionQuery(sessionId);
+
+  const { data: activePlan } = useGetActivePlanQuery();
+
+  const planDay = session?.workoutPlanDayId
+    ? activePlan?.days?.find((d) => d.id === session.workoutPlanDayId)
+    : undefined;
+
+  const { data: allExercisesData } = useGetExercisesQuery(
+    { page: 1, limit: 100 },
+    { skip: !!planDay },
+  );
+
+  const exerciseOptions: ExerciseOption[] = planDay
+    ? planDay.exercises.map((e) => ({
+        id: e.exercise.id,
+        name: e.exercise.name,
+      }))
+    : (allExercisesData?.data ?? []).map((e) => ({ id: e.id, name: e.name }));
 
   const [logWorkoutSet, { isLoading: isLoggingSet }] =
     useLogWorkoutSetMutation();
@@ -62,6 +84,7 @@ export function useWorkoutSessionActions(sessionId: number) {
     session,
     isLoading,
     isError,
+    exerciseOptions,
     logSetDialogOpen,
     completeDialogOpen,
     deleteDialogOpen,

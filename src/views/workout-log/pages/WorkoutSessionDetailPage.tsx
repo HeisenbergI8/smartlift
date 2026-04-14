@@ -56,6 +56,7 @@ export default function WorkoutSessionDetailPage({ sessionId }: Props) {
     session,
     isLoading,
     isError,
+    exerciseOptions,
     logSetDialogOpen,
     completeDialogOpen,
     deleteDialogOpen,
@@ -123,7 +124,7 @@ export default function WorkoutSessionDetailPage({ sessionId }: Props) {
   }
 
   const isInProgress = session.status === "in_progress";
-  const nextSetNumber = session.workoutSets.length + 1;
+  const nextSetNumber = session.sets.length + 1;
 
   const formattedDate = new Date(session.startedAt).toLocaleDateString(
     "en-US",
@@ -197,7 +198,7 @@ export default function WorkoutSessionDetailPage({ sessionId }: Props) {
                 <Chip
                   size="small"
                   variant="outlined"
-                  label={`${session.workoutSets.length} set${session.workoutSets.length !== 1 ? "s" : ""}`}
+                  label={`${session.sets.length} set${session.sets.length !== 1 ? "s" : ""}`}
                 />
               </Stack>
             </Stack>
@@ -248,7 +249,7 @@ export default function WorkoutSessionDetailPage({ sessionId }: Props) {
             <Typography variant="subtitle1" fontWeight={600} mb={2}>
               Sets
             </Typography>
-            <WorkoutSetTable sets={session.workoutSets} />
+            <WorkoutSetTable sets={session.sets} />
           </CardContent>
         </Card>
       </Container>
@@ -258,6 +259,7 @@ export default function WorkoutSessionDetailPage({ sessionId }: Props) {
         open={logSetDialogOpen}
         isSubmitting={isLoggingSet}
         nextSetNumber={nextSetNumber}
+        exercises={exerciseOptions}
         onClose={closeLogSetDialog}
         onSubmit={handleLogSet}
       />

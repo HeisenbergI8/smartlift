@@ -40,6 +40,8 @@ export default function WorkoutLogsPage() {
     isDeleting,
     startDialogOpen,
     deleteId,
+    activePlanDays,
+    activePlanName,
     setPage,
     setLimit,
     handleStatusFilter,
@@ -180,6 +182,8 @@ export default function WorkoutLogsPage() {
       <StartSessionDialog
         open={startDialogOpen}
         isSubmitting={isStarting}
+        activePlanDays={activePlanDays}
+        activePlanName={activePlanName}
         onClose={closeStartDialog}
         onStart={handleStartSession}
       />
