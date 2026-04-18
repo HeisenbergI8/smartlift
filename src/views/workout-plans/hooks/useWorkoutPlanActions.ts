@@ -4,12 +4,15 @@ import { toast } from "react-toastify";
 
 import {
   useActivateWorkoutPlanMutation,
+  useAddWorkoutPlanDayMutation,
   useCreateWorkoutPlanMutation,
+  useDeactivateWorkoutPlanMutation,
   useDeleteWorkoutPlanMutation,
   useGenerateWorkoutPlanMutation,
   useUpdateWorkoutPlanMutation,
 } from "@/store/services/workoutPlanApi";
 import type {
+  CreateWorkoutPlanDayDto,
   CreateWorkoutPlanDto,
   GenerateWorkoutPlanDto,
   UpdateWorkoutPlanDto,
@@ -21,6 +24,7 @@ export function useWorkoutPlanActions() {
   const [editTarget, setEditTarget] = useState<WorkoutPlan | null>(null);
   const [deleteId, setDeleteId] = useState<number | null>(null);
   const [generateDialogOpen, setGenerateDialogOpen] = useState(false);
+  const [addDayDialogOpen, setAddDayDialogOpen] = useState(false);
 
   const [createWorkoutPlan, { isLoading: isCreating }] =
     useCreateWorkoutPlanMutation();
@@ -28,6 +32,10 @@ export function useWorkoutPlanActions() {
     useUpdateWorkoutPlanMutation();
   const [activateWorkoutPlan, { isLoading: isActivating }] =
     useActivateWorkoutPlanMutation();
+  const [deactivateWorkoutPlan, { isLoading: isDeactivating }] =
+    useDeactivateWorkoutPlanMutation();
+  const [addWorkoutPlanDay, { isLoading: isAddingDay }] =
+    useAddWorkoutPlanDayMutation();
   const [generateWorkoutPlan, { isLoading: isGenerating }] =
     useGenerateWorkoutPlanMutation();
   const [deleteWorkoutPlan, { isLoading: isDeleting }] =
@@ -77,6 +85,28 @@ export function useWorkoutPlanActions() {
     }
   };
 
+  const handleDeactivate = async (id: number) => {
+    try {
+      await deactivateWorkoutPlan(id).unwrap();
+      toast.success("Workout plan deactivated");
+    } catch {
+      toast.error("Failed to deactivate workout plan");
+    }
+  };
+
+  const openAddDay = () => setAddDayDialogOpen(true);
+  const closeAddDay = () => setAddDayDialogOpen(false);
+
+  const handleAddDay = async (planId: number, dto: CreateWorkoutPlanDayDto) => {
+    try {
+      await addWorkoutPlanDay({ planId, dto }).unwrap();
+      toast.success("Training day added");
+      closeAddDay();
+    } catch {
+      toast.error("Failed to add training day");
+    }
+  };
+
   const openGenerate = () => setGenerateDialogOpen(true);
   const closeGenerate = () => setGenerateDialogOpen(false);
 
@@ -111,9 +141,12 @@ export function useWorkoutPlanActions() {
     editTarget,
     deleteId,
     generateDialogOpen,
+    addDayDialogOpen,
     isCreating,
     isUpdating,
     isActivating,
+    isDeactivating,
+    isAddingDay,
     isGenerating,
     isDeleting,
     openCreate,
@@ -122,6 +155,10 @@ export function useWorkoutPlanActions() {
     handleCreate,
     handleUpdate,
     handleActivate,
+    handleDeactivate,
+    openAddDay,
+    closeAddDay,
+    handleAddDay,
     openGenerate,
     closeGenerate,
     handleGenerate,

@@ -1,6 +1,7 @@
 "use client";
 
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import AddIcon from "@mui/icons-material/Add";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import PlayArrowIcon from "@mui/icons-material/PlayArrow";
@@ -20,6 +21,7 @@ import { useRouter } from "next/navigation";
 
 import { useGetWorkoutPlanQuery } from "@/store/services/workoutPlanApi";
 
+import AddDayDialog from "../components/AddDayDialog";
 import WorkoutPlanDayAccordion from "../components/WorkoutPlanDayAccordion";
 import WorkoutPlanDialog from "../components/WorkoutPlanDialog";
 import { useWorkoutPlanActions } from "../hooks/useWorkoutPlanActions";
@@ -51,10 +53,15 @@ export default function WorkoutPlanDetailPage({
     isUpdating,
     isActivating,
     isDeleting,
+    isAddingDay,
+    addDayDialogOpen,
     openEdit,
     closeDialog,
     handleUpdate,
     handleActivate,
+    openAddDay,
+    closeAddDay,
+    handleAddDay,
     confirmDelete,
     cancelDelete,
     handleDelete,
@@ -219,9 +226,24 @@ export default function WorkoutPlanDetailPage({
 
         {/* Days */}
         <Box>
-          <Typography variant="h6" fontWeight={600} mb={2}>
-            Training Days
-          </Typography>
+          <Stack
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            mb={2}
+          >
+            <Typography variant="h6" fontWeight={600}>
+              Training Days
+            </Typography>
+            <Button
+              size="small"
+              variant="outlined"
+              startIcon={<AddIcon />}
+              onClick={openAddDay}
+            >
+              Add Day
+            </Button>
+          </Stack>
           {sortedDays.length === 0 ? (
             <Typography variant="body2" color="text.secondary">
               No days configured for this plan.
@@ -248,6 +270,15 @@ export default function WorkoutPlanDetailPage({
         onClose={closeDialog}
         onCreate={() => {}}
         onUpdate={handleUpdate}
+      />
+
+      {/* Add Day dialog */}
+      <AddDayDialog
+        open={addDayDialogOpen}
+        nextDayNumber={sortedDays.length + 1}
+        isSubmitting={isAddingDay}
+        onClose={closeAddDay}
+        onAdd={(dto) => handleAddDay(plan.id, dto)}
       />
 
       {/* Delete confirm */}

@@ -3,6 +3,7 @@ import { createApi, fakeBaseQuery } from "@reduxjs/toolkit/query/react";
 import { workoutPlanRtkConfig } from "@/configs/workoutPlanRtkConfig";
 import { workoutPlanApiService } from "@/views/workout-plans/services/workoutPlanApi";
 import type {
+  CreateWorkoutPlanDayDto,
   CreateWorkoutPlanDto,
   GenerateWorkoutPlanDto,
   UpdateWorkoutPlanDto,
@@ -125,6 +126,40 @@ export const workoutPlanApi = createApi({
         { type: "WorkoutPlans", id: "ACTIVE" },
       ],
     }),
+
+    addWorkoutPlanDay: build.mutation<
+      WorkoutPlan,
+      { planId: number; dto: CreateWorkoutPlanDayDto }
+    >({
+      queryFn: async ({ planId, dto }) => {
+        try {
+          const data = await workoutPlanApiService.addDay(planId, dto);
+          return { data };
+        } catch (error) {
+          return { error: { message: (error as Error).message } };
+        }
+      },
+      invalidatesTags: (_result, _error, { planId }) => [
+        { type: "WorkoutPlans", id: planId },
+        { type: "WorkoutPlans", id: "LIST" },
+        { type: "WorkoutPlans", id: "ACTIVE" },
+      ],
+    }),
+
+    deactivateWorkoutPlan: build.mutation<WorkoutPlan, number>({
+      queryFn: async (id) => {
+        try {
+          const data = await workoutPlanApiService.deactivate(id);
+          return { data };
+        } catch (error) {
+          return { error: { message: (error as Error).message } };
+        }
+      },
+      invalidatesTags: [
+        { type: "WorkoutPlans", id: "LIST" },
+        { type: "WorkoutPlans", id: "ACTIVE" },
+      ],
+    }),
   }),
 });
 
@@ -135,6 +170,8 @@ export const {
   useCreateWorkoutPlanMutation,
   useUpdateWorkoutPlanMutation,
   useActivateWorkoutPlanMutation,
+  useDeactivateWorkoutPlanMutation,
+  useAddWorkoutPlanDayMutation,
   useGenerateWorkoutPlanMutation,
   useDeleteWorkoutPlanMutation,
 } = workoutPlanApi;

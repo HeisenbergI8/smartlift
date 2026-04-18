@@ -81,6 +81,8 @@ export type UpdateWorkoutPlanDto = {
   daysPerWeek?: number;
   durationWeeks?: number;
   startedAt?: string;
+  isActive?: boolean;
+  days?: CreateWorkoutPlanDayDto[];
 };
 
 export type GenerateWorkoutPlanDto = {
