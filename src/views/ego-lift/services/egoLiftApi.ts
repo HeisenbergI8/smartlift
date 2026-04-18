@@ -1,100 +1,56 @@
+import { apiClient } from "@/libs/apiClient";
 import type { EgoLiftAlert, EgoLiftAlertsResponse } from "../types";
 
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
-
-const daysAgo = (d: number) =>
-  new Date(Date.now() - d * 24 * 60 * 60 * 1000).toISOString();
-
-const mockAlerts: EgoLiftAlert[] = [
-  {
-    id: 1,
-    userId: 1,
-    exerciseId: 1,
-    workoutSetId: 101,
-    severity: "critical",
-    message:
-      "Weight increased by 22% while reps dropped by 40% — possible ego-lift detected.",
-    previousWeightKg: 80,
-    flaggedWeightKg: 97.6,
-    previousReps: 10,
-    flaggedReps: 6,
-    trainingGoal: "hypertrophy",
-    isDismissed: false,
-    createdAt: daysAgo(1),
-    exercise: { id: 1, name: "Barbell Bench Press" },
-  },
-  {
-    id: 2,
-    userId: 1,
-    exerciseId: 2,
-    workoutSetId: 102,
-    severity: "warning",
-    message:
-      "Weight increased by 12% while reps dropped by 25% — possible ego-lift detected.",
-    previousWeightKg: 120,
-    flaggedWeightKg: 134.4,
-    previousReps: 5,
-    flaggedReps: 3,
-    trainingGoal: "strength",
-    isDismissed: false,
-    createdAt: daysAgo(3),
-    exercise: { id: 2, name: "Barbell Back Squat" },
-  },
-  {
-    id: 3,
-    userId: 1,
-    exerciseId: 3,
-    workoutSetId: 103,
-    severity: "critical",
-    message:
-      "Weight increased by 25% while reps dropped by 35% — possible ego-lift detected.",
-    previousWeightKg: 160,
-    flaggedWeightKg: 200,
-    previousReps: 20,
-    flaggedReps: 13,
-    trainingGoal: "endurance",
-    isDismissed: false,
-    createdAt: daysAgo(5),
-    exercise: { id: 3, name: "Conventional Deadlift" },
-  },
-  {
-    id: 4,
-    userId: 1,
-    exerciseId: 1,
-    workoutSetId: 104,
-    severity: "warning",
-    message:
-      "Weight increased by 18% while reps dropped by 27% — possible ego-lift detected.",
-    previousWeightKg: 75,
-    flaggedWeightKg: 88.5,
-    previousReps: 8,
-    flaggedReps: 5,
-    trainingGoal: "hypertrophy",
-    isDismissed: false,
-    createdAt: daysAgo(10),
-    exercise: { id: 1, name: "Barbell Bench Press" },
-  },
-];
+function mapServerAlert(raw: any): EgoLiftAlert {
+  return {
+    id: Number(raw.id),
+    userId: Number(raw.userId),
+    exerciseId: Number(raw.exerciseId),
+    workoutSetId: Number(raw.workoutSetId),
+    severity: raw.severity,
+    message: raw.message,
+    previousWeightKg:
+      typeof raw.previousWeightKg === "string"
+        ? parseFloat(raw.previousWeightKg)
+        : raw.previousWeightKg,
+    flaggedWeightKg:
+      typeof raw.flaggedWeightKg === "string"
+        ? parseFloat(raw.flaggedWeightKg)
+        : raw.flaggedWeightKg,
+    previousReps: Number(raw.previousReps),
+    flaggedReps: Number(raw.flaggedReps),
+    trainingGoal: raw.trainingGoal,
+    isDismissed: Boolean(raw.isDismissed),
+    createdAt: raw.createdAt,
+    exercise: {
+      id: raw.exercise?.id ?? raw.exerciseId,
+      name: raw.exercise?.name ?? "",
+    },
+  };
+}
 
 export const egoLiftApiService = {
   async getAlerts(): Promise<EgoLiftAlertsResponse> {
-    await delay(300);
-    return { data: mockAlerts.filter((a) => !a.isDismissed) };
+    const res = await apiClient.get<{
+      data: any[];
+      total?: number;
+      page?: number;
+      limit?: number;
+    }>("/ego-lift-alerts?page=1&limit=20");
+    const list = Array.isArray(res.data) ? res.data : [];
+    return { data: list.map(mapServerAlert) };
   },
 
   async getAlertsByExercise(
     exerciseId: number,
   ): Promise<EgoLiftAlertsResponse> {
-    await delay(200);
-    return {
-      data: mockAlerts.filter((a) => a.exerciseId === exerciseId),
-    };
+    const res = await apiClient.get<any[]>(
+      `/ego-lift-alerts/exercise/${exerciseId}?page=1&limit=20`,
+    );
+    return { data: (Array.isArray(res) ? res : []).map(mapServerAlert) };
   },
 
   async dismissAlert(alertId: number): Promise<void> {
-    await delay(150);
-    const alert = mockAlerts.find((a) => a.id === alertId);
-    if (!alert) throw new Error("Alert not found");
-    alert.isDismissed = true;
+    await apiClient.patch<void>(`/ego-lift-alerts/${alertId}/dismiss`);
   },
 };
