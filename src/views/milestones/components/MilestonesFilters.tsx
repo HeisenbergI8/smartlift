@@ -78,6 +78,7 @@ export default function MilestonesFilters({
           anchor="bottom"
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
+          sx={{ zIndex: 1400 }}
           PaperProps={{
             sx: {
               borderTopLeftRadius: 16,
