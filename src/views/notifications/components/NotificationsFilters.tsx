@@ -112,6 +112,7 @@ export default function NotificationsFilters({
           anchor="bottom"
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
+          sx={{ zIndex: 1400 }}
           PaperProps={{
             sx: { borderTopLeftRadius: 16, borderTopRightRadius: 16, pb: 9 },
           }}
