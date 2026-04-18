@@ -25,6 +25,7 @@ type Props = {
   isSubmitting: boolean;
   activePlanDays: WorkoutPlanDay[];
   activePlanName: string | null;
+  hasActivePlan: boolean;
   onClose: () => void;
   onStart: (dto: StartSessionDto) => void;
 };
@@ -34,6 +35,7 @@ export default function StartSessionDialog({
   isSubmitting,
   activePlanDays,
   activePlanName,
+  hasActivePlan,
   onClose,
   onStart,
 }: Props) {
@@ -86,7 +88,9 @@ export default function StartSessionDialog({
                   errors.workoutPlanDayId?.message ??
                   (hasPlanDays
                     ? `From active plan: ${activePlanName}`
-                    : "No active plan — starting a free session")
+                    : hasActivePlan
+                      ? `"${activePlanName}" has no workout days configured — add days to the plan first, or start a free session`
+                      : "No active plan — starting a free session")
                 }
                 fullWidth
               >

@@ -2,6 +2,9 @@
 
 import AddIcon from "@mui/icons-material/Add";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
+import PlayArrowIcon from "@mui/icons-material/PlayArrow";
+import Alert from "@mui/material/Alert";
+import AlertTitle from "@mui/material/AlertTitle";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Chip from "@mui/material/Chip";
@@ -14,7 +17,9 @@ import Grid from "@mui/material/Grid";
 import Skeleton from "@mui/material/Skeleton";
 import Stack from "@mui/material/Stack";
 import TablePagination from "@mui/material/TablePagination";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import { useRouter } from "next/navigation";
 
 import WorkoutSessionCard from "../components/WorkoutSessionCard";
 import StartSessionDialog from "../components/StartSessionDialog";
@@ -29,6 +34,7 @@ const STATUS_FILTERS: { label: string; value: SessionStatus | "" }[] = [
 ];
 
 export default function WorkoutLogsPage() {
+  const router = useRouter();
   const {
     sessions,
     total,
@@ -42,6 +48,12 @@ export default function WorkoutLogsPage() {
     deleteId,
     activePlanDays,
     activePlanName,
+    hasActivePlan,
+    hasInProgressSession,
+    activeSession,
+    resolvePlanDayName,
+    isSkippingActive,
+    handleSkipActive,
     setPage,
     setLimit,
     handleStatusFilter,
@@ -82,14 +94,65 @@ export default function WorkoutLogsPage() {
               Track your sessions, log sets, and review your training history
             </Typography>
           </Box>
-          <Button
-            variant="contained"
-            startIcon={<AddIcon />}
-            onClick={openStartDialog}
+          <Tooltip
+            title={
+              hasInProgressSession
+                ? "Complete or skip your active session before starting a new one"
+                : ""
+            }
+            disableHoverListener={!hasInProgressSession}
           >
-            Start Session
-          </Button>
+            <span>
+              <Button
+                variant="contained"
+                startIcon={<AddIcon />}
+                onClick={openStartDialog}
+                disabled={hasInProgressSession}
+              >
+                Start Session
+              </Button>
+            </span>
+          </Tooltip>
         </Stack>
+
+        {/* Active session banner */}
+        {hasInProgressSession && activeSession && (
+          <Alert
+            severity="info"
+            icon={<PlayArrowIcon />}
+            action={
+              <Stack direction="row" gap={1}>
+                <Button
+                  color="inherit"
+                  size="small"
+                  disabled={isSkippingActive}
+                  onClick={() => handleSkipActive({})}
+                >
+                  {isSkippingActive ? "Skipping…" : "Skip"}
+                </Button>
+                <Button
+                  color="inherit"
+                  size="small"
+                  onClick={() =>
+                    router.push(`/workout-log/${activeSession.id}`)
+                  }
+                >
+                  Continue
+                </Button>
+              </Stack>
+            }
+            sx={{ mb: 3 }}
+          >
+            <AlertTitle>Session In Progress</AlertTitle>
+            You have an active session started on{" "}
+            {new Date(activeSession.startedAt).toLocaleDateString("en-US", {
+              weekday: "short",
+              month: "short",
+              day: "numeric",
+            })}
+            . Complete or skip it before starting a new one.
+          </Alert>
+        )}
 
         {/* Status filter chips */}
         <Stack direction="row" gap={1} flexWrap="wrap" mb={3}>
@@ -155,6 +218,7 @@ export default function WorkoutLogsPage() {
                 <Grid key={session.id} size={{ xs: 12, sm: 6, md: 4 }}>
                   <WorkoutSessionCard
                     session={session}
+                    planDayName={resolvePlanDayName(session.workoutPlanDayId)}
                     onDelete={confirmDelete}
                   />
                 </Grid>
@@ -184,6 +248,7 @@ export default function WorkoutLogsPage() {
         isSubmitting={isStarting}
         activePlanDays={activePlanDays}
         activePlanName={activePlanName}
+        hasActivePlan={hasActivePlan}
         onClose={closeStartDialog}
         onStart={handleStartSession}
       />

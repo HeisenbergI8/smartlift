@@ -9,14 +9,16 @@ import {
   useDeleteWorkoutSessionMutation,
   useGetWorkoutSessionQuery,
   useLogWorkoutSetMutation,
+  useSkipWorkoutSessionMutation,
 } from "@/store/services/workoutLogApi";
-import type { CompleteSessionDto, LogSetDto } from "../types";
+import type { CompleteSessionDto, LogSetDto, SkipSessionDto } from "../types";
 
 export type ExerciseOption = { id: number; name: string };
 
 export function useWorkoutSessionActions(sessionId: number) {
   const [logSetDialogOpen, setLogSetDialogOpen] = useState(false);
   const [completeDialogOpen, setCompleteDialogOpen] = useState(false);
+  const [skipDialogOpen, setSkipDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
 
   const {
@@ -47,6 +49,8 @@ export function useWorkoutSessionActions(sessionId: number) {
     useLogWorkoutSetMutation();
   const [completeWorkoutSession, { isLoading: isCompleting }] =
     useCompleteWorkoutSessionMutation();
+  const [skipWorkoutSession, { isLoading: isSkipping }] =
+    useSkipWorkoutSessionMutation();
   const [deleteWorkoutSession, { isLoading: isDeleting }] =
     useDeleteWorkoutSessionMutation();
 
@@ -70,6 +74,16 @@ export function useWorkoutSessionActions(sessionId: number) {
     }
   };
 
+  const handleSkip = async (dto: SkipSessionDto) => {
+    try {
+      await skipWorkoutSession({ sessionId, dto }).unwrap();
+      toast.success("Session skipped");
+      setSkipDialogOpen(false);
+    } catch {
+      toast.error("Failed to skip session");
+    }
+  };
+
   const handleDelete = async (onSuccess: () => void) => {
     try {
       await deleteWorkoutSession(sessionId).unwrap();
@@ -87,18 +101,23 @@ export function useWorkoutSessionActions(sessionId: number) {
     exerciseOptions,
     logSetDialogOpen,
     completeDialogOpen,
+    skipDialogOpen,
     deleteDialogOpen,
     isLoggingSet,
     isCompleting,
+    isSkipping,
     isDeleting,
     openLogSetDialog: () => setLogSetDialogOpen(true),
     closeLogSetDialog: () => setLogSetDialogOpen(false),
     openCompleteDialog: () => setCompleteDialogOpen(true),
     closeCompleteDialog: () => setCompleteDialogOpen(false),
+    openSkipDialog: () => setSkipDialogOpen(true),
+    closeSkipDialog: () => setSkipDialogOpen(false),
     openDeleteDialog: () => setDeleteDialogOpen(true),
     closeDeleteDialog: () => setDeleteDialogOpen(false),
     handleLogSet,
     handleComplete,
+    handleSkip,
     handleDelete,
   };
 }

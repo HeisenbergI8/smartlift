@@ -32,10 +32,15 @@ const STATUS_LABEL: Record<SessionStatus, string> = {
 
 type Props = {
   session: WorkoutSession;
+  planDayName?: string | null;
   onDelete: (id: number) => void;
 };
 
-export default function WorkoutSessionCard({ session, onDelete }: Props) {
+export default function WorkoutSessionCard({
+  session,
+  planDayName,
+  onDelete,
+}: Props) {
   const router = useRouter();
 
   const handleCardClick = () => {
@@ -51,6 +56,18 @@ export default function WorkoutSessionCard({ session, onDelete }: Props) {
     "en-US",
     { hour: "2-digit", minute: "2-digit" },
   );
+
+  const uniqueExercises = [
+    ...new Map(
+      session.sets.map((s) => [s.exerciseId, s.exercise.name]),
+    ).values(),
+  ];
+
+  const exercisePreview =
+    uniqueExercises.length === 0
+      ? null
+      : uniqueExercises.slice(0, 3).join(" · ") +
+        (uniqueExercises.length > 3 ? ` +${uniqueExercises.length - 3}` : "");
 
   return (
     <Card
@@ -68,10 +85,10 @@ export default function WorkoutSessionCard({ session, onDelete }: Props) {
           <FitnessCenterIcon sx={{ color: "text.secondary", mt: 0.25 }} />
           <Box sx={{ flexGrow: 1 }}>
             <Typography variant="subtitle1" fontWeight={600} lineHeight={1.2}>
-              {formattedDate}
+              {planDayName ?? formattedDate}
             </Typography>
             <Typography variant="caption" color="text.secondary">
-              {formattedTime}
+              {planDayName ? formattedDate : formattedTime}
             </Typography>
           </Box>
           <Tooltip title="Delete session">
@@ -89,7 +106,12 @@ export default function WorkoutSessionCard({ session, onDelete }: Props) {
           </Tooltip>
         </Stack>
 
-        <Stack direction="row" gap={1} flexWrap="wrap" mb={1.5}>
+        <Stack
+          direction="row"
+          gap={1}
+          flexWrap="wrap"
+          mb={exercisePreview ? 1 : 0}
+        >
           <Chip
             size="small"
             color={STATUS_COLOR_MAP[session.status]}
@@ -102,16 +124,21 @@ export default function WorkoutSessionCard({ session, onDelete }: Props) {
               label={`${session.durationMinutes} min`}
             />
           )}
-          <Chip
-            size="small"
-            variant="outlined"
-            label={`${session.sets.length} set${session.sets.length !== 1 ? "s" : ""}`}
-          />
         </Stack>
+
+        {exercisePreview && (
+          <Typography
+            variant="caption"
+            color="text.secondary"
+            sx={{ display: "block", mt: 0.5 }}
+          >
+            {exercisePreview}
+          </Typography>
+        )}
 
         {session.notes && (
           <>
-            <Divider sx={{ mb: 1 }} />
+            <Divider sx={{ my: 1 }} />
             <Typography
               variant="body2"
               color="text.secondary"

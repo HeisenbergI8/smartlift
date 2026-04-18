@@ -7,6 +7,7 @@ import type {
   GetSessionsParams,
   LogSetDto,
   SessionsResponse,
+  SkipSessionDto,
   StartSessionDto,
   WorkoutSession,
   WorkoutSet,
@@ -106,6 +107,24 @@ export const workoutLogApi = createApi({
         { type: "WorkoutSessions", id: "LIST" },
       ],
     }),
+
+    skipWorkoutSession: build.mutation<
+      WorkoutSession,
+      { sessionId: number; dto: SkipSessionDto }
+    >({
+      queryFn: async ({ sessionId, dto }) => {
+        try {
+          const data = await workoutLogApiService.skipSession(sessionId, dto);
+          return { data };
+        } catch (error) {
+          return { error: { message: (error as Error).message } };
+        }
+      },
+      invalidatesTags: (_result, _error, { sessionId }) => [
+        { type: "WorkoutSessions", id: "LIST" },
+        { type: "WorkoutSessions", id: sessionId },
+      ],
+    }),
   }),
 });
 
@@ -115,5 +134,6 @@ export const {
   useStartWorkoutSessionMutation,
   useLogWorkoutSetMutation,
   useCompleteWorkoutSessionMutation,
+  useSkipWorkoutSessionMutation,
   useDeleteWorkoutSessionMutation,
 } = workoutLogApi;

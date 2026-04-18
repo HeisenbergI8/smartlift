@@ -5,6 +5,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DeleteIcon from "@mui/icons-material/Delete";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import AddIcon from "@mui/icons-material/Add";
+import SkipNextIcon from "@mui/icons-material/SkipNext";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
@@ -24,6 +25,7 @@ import { useRouter } from "next/navigation";
 
 import CompleteSessionDialog from "../components/CompleteSessionDialog";
 import LogSetDialog from "../components/LogSetDialog";
+import SkipSessionDialog from "../components/SkipSessionDialog";
 import WorkoutSetTable from "../components/WorkoutSetTable";
 import { useWorkoutSessionActions } from "../hooks/useWorkoutSessionActions";
 import type { SessionStatus } from "../types";
@@ -59,18 +61,23 @@ export default function WorkoutSessionDetailPage({ sessionId }: Props) {
     exerciseOptions,
     logSetDialogOpen,
     completeDialogOpen,
+    skipDialogOpen,
     deleteDialogOpen,
     isLoggingSet,
     isCompleting,
+    isSkipping,
     isDeleting,
     openLogSetDialog,
     closeLogSetDialog,
     openCompleteDialog,
     closeCompleteDialog,
+    openSkipDialog,
+    closeSkipDialog,
     openDeleteDialog,
     closeDeleteDialog,
     handleLogSet,
     handleComplete,
+    handleSkip,
     handleDelete,
   } = useWorkoutSessionActions(sessionId);
 
@@ -230,7 +237,15 @@ export default function WorkoutSessionDetailPage({ sessionId }: Props) {
               startIcon={<CheckCircleIcon />}
               onClick={openCompleteDialog}
             >
-              Complete Session
+              Complete
+            </Button>
+            <Button
+              variant="outlined"
+              color="warning"
+              startIcon={<SkipNextIcon />}
+              onClick={openSkipDialog}
+            >
+              Skip
             </Button>
             <Button
               variant="outlined"
@@ -270,6 +285,14 @@ export default function WorkoutSessionDetailPage({ sessionId }: Props) {
         isSubmitting={isCompleting}
         onClose={closeCompleteDialog}
         onComplete={handleComplete}
+      />
+
+      {/* Skip session dialog */}
+      <SkipSessionDialog
+        open={skipDialogOpen}
+        isSubmitting={isSkipping}
+        onClose={closeSkipDialog}
+        onSkip={handleSkip}
       />
 
       {/* Delete confirm dialog */}

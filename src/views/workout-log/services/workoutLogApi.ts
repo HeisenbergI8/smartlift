@@ -4,6 +4,7 @@ import type {
   GetSessionsParams,
   LogSetDto,
   SessionsResponse,
+  SkipSessionDto,
   StartSessionDto,
   WorkoutSession,
   WorkoutSet,
@@ -41,6 +42,16 @@ export const workoutLogApiService = {
   ): Promise<WorkoutSession> => {
     return apiClient.patch<WorkoutSession>(
       `/workout-sessions/${sessionId}/complete`,
+      dto,
+    );
+  },
+
+  skipSession: async (
+    sessionId: number,
+    dto: SkipSessionDto,
+  ): Promise<WorkoutSession> => {
+    return apiClient.patch<WorkoutSession>(
+      `/workout-sessions/${sessionId}/skip`,
       dto,
     );
   },

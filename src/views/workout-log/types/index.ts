@@ -64,3 +64,7 @@ export type LogSetDto = {
 export type CompleteSessionDto = {
   notes?: string;
 };
+
+export type SkipSessionDto = {
+  notes?: string;
+};
