@@ -208,8 +208,9 @@ export default function ExerciseFilters({
           anchor="bottom"
           open={drawerOpen}
           onClose={() => setDrawerOpen(false)}
+          sx={{ zIndex: 1400 }}
           PaperProps={{
-            sx: { borderTopLeftRadius: 16, borderTopRightRadius: 16, pb: 3 },
+            sx: { borderTopLeftRadius: 16, borderTopRightRadius: 16, pb: 9 },
           }}
         >
           <Box sx={{ px: 2, pt: 2, pb: 1 }}>
