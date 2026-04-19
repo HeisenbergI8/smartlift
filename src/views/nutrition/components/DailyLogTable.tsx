@@ -26,6 +26,11 @@ type Props = {
 const fmt = (val: number | null, unit = "") =>
   val !== null ? `${val.toLocaleString()}${unit}` : "—";
 
+const fmtDate = (dateStr: string) => {
+  const [y, m, d] = dateStr.split("T")[0].split("-");
+  return `${d}/${m}/${y}`;
+};
+
 export default function DailyLogTable({ logs, isLoading }: Props) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -100,7 +105,7 @@ export default function DailyLogTable({ logs, isLoading }: Props) {
                   mb={1}
                 >
                   <Typography variant="subtitle2" fontWeight={600}>
-                    {log.logDate}
+                    {fmtDate(log.logDate)}
                   </Typography>
                   <Typography
                     variant="body2"
@@ -176,7 +181,7 @@ export default function DailyLogTable({ logs, isLoading }: Props) {
         <TableBody>
           {paginated.map((log) => (
             <TableRow key={log.id} hover>
-              <TableCell>{log.logDate}</TableCell>
+              <TableCell>{fmtDate(log.logDate)}</TableCell>
               <TableCell>{fmt(log.totalCaloriesKcal)}</TableCell>
               <TableCell>{fmt(log.proteinG)}</TableCell>
               <TableCell>{fmt(log.carbohydratesG)}</TableCell>

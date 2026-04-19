@@ -8,16 +8,9 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import FormControl from "@mui/material/FormControl";
-import InputLabel from "@mui/material/InputLabel";
-import MenuItem from "@mui/material/MenuItem";
-import Select from "@mui/material/Select";
 import TextField from "@mui/material/TextField";
 
-import type {
-  CreateNutritionRecommendationDto,
-  NutritionSource,
-} from "../types";
+import type { CreateNutritionRecommendationDto } from "../types";
 
 type Props = {
   open: boolean;
@@ -34,13 +27,7 @@ type FormValues = {
   effectiveFrom: string;
   effectiveTo: string;
   notes: string;
-  source: NutritionSource;
 };
-
-const SOURCE_OPTIONS: { value: NutritionSource; label: string }[] = [
-  { value: "manual", label: "Manual" },
-  { value: "coach", label: "Coach" },
-];
 
 const today = () => new Date().toISOString().split("T")[0];
 
@@ -52,7 +39,6 @@ const DEFAULT_VALUES: FormValues = {
   effectiveFrom: today(),
   effectiveTo: "",
   notes: "",
-  source: "manual",
 };
 
 export default function NutritionRecommendationDialog({
@@ -80,7 +66,6 @@ export default function NutritionRecommendationDialog({
       effectiveFrom: values.effectiveFrom,
       effectiveTo: values.effectiveTo || null,
       notes: values.notes || null,
-      source: values.source,
     });
   };
 
@@ -157,23 +142,6 @@ export default function NutritionRecommendationDialog({
           />
 
           <Controller
-            name="source"
-            control={control}
-            render={({ field }) => (
-              <FormControl fullWidth size="small">
-                <InputLabel>Source</InputLabel>
-                <Select label="Source" {...field}>
-                  {SOURCE_OPTIONS.map((opt) => (
-                    <MenuItem key={opt.value} value={opt.value}>
-                      {opt.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            )}
-          />
-
-          <Controller
             name="effectiveFrom"
             control={control}
             rules={{ required: true }}
@@ -184,6 +152,7 @@ export default function NutritionRecommendationDialog({
                 size="small"
                 type="date"
                 InputLabelProps={{ shrink: true }}
+                inputProps={{ style: { colorScheme: "dark" } }}
               />
             )}
           />
@@ -198,6 +167,7 @@ export default function NutritionRecommendationDialog({
                 size="small"
                 type="date"
                 InputLabelProps={{ shrink: true }}
+                inputProps={{ style: { colorScheme: "dark" } }}
               />
             )}
           />

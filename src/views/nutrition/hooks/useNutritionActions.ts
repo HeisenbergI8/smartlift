@@ -3,7 +3,6 @@ import { toast } from "react-toastify";
 
 import {
   useGetActiveNutritionRecommendationQuery,
-  useGetAllNutritionRecommendationsQuery,
   useCreateNutritionRecommendationMutation,
   useGenerateNutritionRecommendationMutation,
 } from "@/store/services/nutritionApi";
@@ -15,16 +14,14 @@ export function useNutritionActions() {
   const { data: active, isLoading: isActiveLoading } =
     useGetActiveNutritionRecommendationQuery();
 
-  const { data: allData, isLoading: isHistoryLoading } =
-    useGetAllNutritionRecommendationsQuery();
+  const history = active ? [active] : [];
+  const isHistoryLoading = isActiveLoading;
 
   const [createRecommendation, { isLoading: isCreating }] =
     useCreateNutritionRecommendationMutation();
 
   const [generateRecommendation, { isLoading: isGenerating }] =
     useGenerateNutritionRecommendationMutation();
-
-  const history = allData?.data ?? [];
 
   const handleCreate = useCallback(
     async (dto: CreateNutritionRecommendationDto) => {

@@ -12,8 +12,8 @@ import type {
   GetDailyLogsParams,
   LogDailyNutritionDto,
   NutritionAdjustment,
+  NutritionAdjustmentsResponse,
   NutritionRecommendation,
-  NutritionRecommendationsResponse,
   PlateauDetectResult,
 } from "@/views/nutrition/types";
 
@@ -35,30 +35,6 @@ export const nutritionApi = createApi({
         }
       },
       providesTags: [{ type: "NutritionActive" as const, id: "ACTIVE" }],
-    }),
-
-    getAllNutritionRecommendations: build.query<
-      NutritionRecommendationsResponse,
-      void
-    >({
-      queryFn: async () => {
-        try {
-          const data = await nutritionApiService.getAllRecommendations();
-          return { data };
-        } catch (error) {
-          return { error: { message: (error as Error).message } };
-        }
-      },
-      providesTags: (result) =>
-        result?.data
-          ? [
-              ...result.data.map(({ id }) => ({
-                type: "NutritionHistory" as const,
-                id,
-              })),
-              { type: "NutritionHistory" as const, id: "LIST" },
-            ]
-          : [{ type: "NutritionHistory" as const, id: "LIST" }],
     }),
 
     createNutritionRecommendation: build.mutation<
@@ -138,8 +114,9 @@ export const nutritionApi = createApi({
     getNutritionAdjustmentHistory: build.query<NutritionAdjustment[], void>({
       queryFn: async () => {
         try {
-          const data = await dailyNutritionApiService.getAdjustmentHistory();
-          return { data };
+          const response =
+            await dailyNutritionApiService.getAdjustmentHistory();
+          return { data: response.data };
         } catch (error) {
           return { error: { message: (error as Error).message } };
         }
@@ -167,7 +144,6 @@ export const nutritionApi = createApi({
 
 export const {
   useGetActiveNutritionRecommendationQuery,
-  useGetAllNutritionRecommendationsQuery,
   useCreateNutritionRecommendationMutation,
   useGenerateNutritionRecommendationMutation,
   useGetDailyNutritionLogsQuery,

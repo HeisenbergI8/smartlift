@@ -32,7 +32,7 @@ const SOURCE_COLOR: Record<NutritionSource, "primary" | "secondary" | "info"> =
 
 const SOURCE_LABEL: Record<NutritionSource, string> = {
   system: "Smart",
-  coach: "Coach",
+  coach: "Manual",
   manual: "Manual",
 };
 

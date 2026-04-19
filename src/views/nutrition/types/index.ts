@@ -3,6 +3,7 @@ export type NutritionSource = "system" | "coach" | "manual";
 export type NutritionRecommendation = {
   id: number;
   userId: number;
+  createdBy: number | null;
   dailyCaloriesKcal: number;
   proteinG: number;
   carbohydratesG: number;
@@ -24,7 +25,6 @@ export type CreateNutritionRecommendationDto = {
   effectiveFrom: string;
   effectiveTo?: string | null;
   notes?: string | null;
-  source: NutritionSource;
 };
 
 export type NutritionRecommendationsResponse = {
@@ -89,6 +89,13 @@ export type NutritionAdjustment = {
   reason: string | null;
   createdAt: string;
   nutritionRecommendation: NutritionRecommendation;
+};
+
+export type NutritionAdjustmentsResponse = {
+  data: NutritionAdjustment[];
+  total: number;
+  page: number;
+  limit: number;
 };
 
 export type PlateauDetectResult = {

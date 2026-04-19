@@ -93,6 +93,7 @@ export default function DailyLogDialog({
                 size="small"
                 type="date"
                 InputLabelProps={{ shrink: true }}
+                inputProps={{ style: { colorScheme: "dark" } }}
               />
             )}
           />

@@ -151,6 +151,7 @@ export default function NutritionPage() {
                   value={startDate}
                   onChange={(e) => setStartDate(e.target.value)}
                   InputLabelProps={{ shrink: true }}
+                  inputProps={{ style: { colorScheme: "dark" } }}
                   sx={{ flex: 1, minWidth: 120 }}
                 />
                 <TextField
@@ -160,6 +161,7 @@ export default function NutritionPage() {
                   value={endDate}
                   onChange={(e) => setEndDate(e.target.value)}
                   InputLabelProps={{ shrink: true }}
+                  inputProps={{ style: { colorScheme: "dark" } }}
                   sx={{ flex: 1, minWidth: 120 }}
                 />
               </Stack>

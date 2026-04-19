@@ -34,7 +34,7 @@ const SOURCE_COLOR: Record<NutritionSource, "primary" | "secondary" | "info"> =
 
 const SOURCE_LABEL: Record<NutritionSource, string> = {
   system: "Smart",
-  coach: "Coach",
+  coach: "Manual",
   manual: "Manual",
 };
 
@@ -154,9 +154,9 @@ export default function NutritionHistoryTable({ history, isLoading }: Props) {
                 <Divider sx={{ mb: 1 }} />
 
                 <Typography variant="caption" color="text.disabled">
-                  {new Date(item.effectiveFrom).toLocaleDateString()}
+                  {new Date(item.effectiveFrom).toLocaleDateString("en-GB")}
                   {item.effectiveTo
-                    ? ` – ${new Date(item.effectiveTo).toLocaleDateString()}`
+                    ? ` – ${new Date(item.effectiveTo).toLocaleDateString("en-GB")}`
                     : " – present"}
                 </Typography>
               </CardContent>
@@ -208,9 +208,9 @@ export default function NutritionHistoryTable({ history, isLoading }: Props) {
                 />
               </TableCell>
               <TableCell>
-                {new Date(item.effectiveFrom).toLocaleDateString()}
+                {new Date(item.effectiveFrom).toLocaleDateString("en-GB")}
                 {item.effectiveTo
-                  ? ` – ${new Date(item.effectiveTo).toLocaleDateString()}`
+                  ? ` – ${new Date(item.effectiveTo).toLocaleDateString("en-GB")}`
                   : " – present"}
               </TableCell>
             </TableRow>
