@@ -172,11 +172,78 @@ export default function ProfileForm({
                 value={field.value ?? ""}
                 label="Activity Level"
               >
-                <MenuItem value="sedentary">Sedentary</MenuItem>
-                <MenuItem value="lightly_active">Lightly Active</MenuItem>
-                <MenuItem value="moderately_active">Moderately Active</MenuItem>
-                <MenuItem value="very_active">Very Active</MenuItem>
-                <MenuItem value="extra_active">Extra Active</MenuItem>
+                <MenuItem value="sedentary">
+                  <Box>
+                    <Box fontWeight={500}>Sedentary</Box>
+                    <Box
+                      sx={{
+                        fontSize: "0.75rem",
+                        color: "text.secondary",
+                        whiteSpace: "normal",
+                      }}
+                    >
+                      Desk job or mostly sitting — little to no exercise
+                    </Box>
+                  </Box>
+                </MenuItem>
+                <MenuItem value="lightly_active">
+                  <Box>
+                    <Box fontWeight={500}>Lightly Active</Box>
+                    <Box
+                      sx={{
+                        fontSize: "0.75rem",
+                        color: "text.secondary",
+                        whiteSpace: "normal",
+                      }}
+                    >
+                      Light exercise 1–3 days/week or a job with some walking
+                    </Box>
+                  </Box>
+                </MenuItem>
+                <MenuItem value="moderately_active">
+                  <Box>
+                    <Box fontWeight={500}>Moderately Active</Box>
+                    <Box
+                      sx={{
+                        fontSize: "0.75rem",
+                        color: "text.secondary",
+                        whiteSpace: "normal",
+                      }}
+                    >
+                      Moderate exercise 3–5 days/week with an active daily
+                      routine
+                    </Box>
+                  </Box>
+                </MenuItem>
+                <MenuItem value="very_active">
+                  <Box>
+                    <Box fontWeight={500}>Very Active</Box>
+                    <Box
+                      sx={{
+                        fontSize: "0.75rem",
+                        color: "text.secondary",
+                        whiteSpace: "normal",
+                      }}
+                    >
+                      Hard training 6–7 days/week or a physically demanding job
+                    </Box>
+                  </Box>
+                </MenuItem>
+                <MenuItem value="extra_active">
+                  <Box>
+                    <Box fontWeight={500}>Extra Active</Box>
+                    <Box
+                      sx={{
+                        fontSize: "0.75rem",
+                        color: "text.secondary",
+                        whiteSpace: "normal",
+                      }}
+                    >
+                      Athlete-level training twice a day or very heavy manual
+                      labour
+                    </Box>
+                  </Box>
+                </MenuItem>
               </Select>
             </FormControl>
           )}
