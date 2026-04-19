@@ -4,6 +4,8 @@ import { progressionRtkConfig } from "@/configs/progressionRtkConfig";
 import { progressionApiService } from "@/views/progression/services/progressionApi";
 import type {
   EvaluateProgressionResponse,
+  GetProgressionHistoryByExerciseParams,
+  GetProgressionHistoryParams,
   ProgressionHistoryResponse,
   ProgressionSettings,
   UpdateProgressionSettingsDto,
@@ -43,10 +45,37 @@ export const progressionApi = createApi({
       ],
     }),
 
-    getProgressionHistory: build.query<ProgressionHistoryResponse, void>({
-      queryFn: async () => {
+    getProgressionHistory: build.query<
+      ProgressionHistoryResponse,
+      GetProgressionHistoryParams
+    >({
+      queryFn: async (params) => {
         try {
-          const data = await progressionApiService.getHistory();
+          const data = await progressionApiService.getHistory(params);
+          return { data };
+        } catch (error) {
+          return { error: { message: (error as Error).message } };
+        }
+      },
+      providesTags: (result) =>
+        result?.data
+          ? [
+              ...result.data.map(({ id }) => ({
+                type: "ProgressionHistory" as const,
+                id,
+              })),
+              { type: "ProgressionHistory" as const, id: "LIST" },
+            ]
+          : [{ type: "ProgressionHistory" as const, id: "LIST" }],
+    }),
+
+    getProgressionHistoryByExercise: build.query<
+      ProgressionHistoryResponse,
+      GetProgressionHistoryByExerciseParams
+    >({
+      queryFn: async (params) => {
+        try {
+          const data = await progressionApiService.getHistoryByExercise(params);
           return { data };
         } catch (error) {
           return { error: { message: (error as Error).message } };
@@ -82,5 +111,6 @@ export const {
   useGetProgressionSettingsQuery,
   useUpsertProgressionSettingsMutation,
   useGetProgressionHistoryQuery,
+  useGetProgressionHistoryByExerciseQuery,
   useEvaluateProgressionMutation,
 } = progressionApi;

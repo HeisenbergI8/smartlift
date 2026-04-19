@@ -5,39 +5,69 @@ import {
   useGetProgressionSettingsQuery,
   useUpsertProgressionSettingsMutation,
   useGetProgressionHistoryQuery,
+  useGetProgressionHistoryByExerciseQuery,
   useEvaluateProgressionMutation,
 } from "@/store/services/progressionApi";
 import type {
-  ProgressionHistoryItem,
   ProgressionSettings,
   UpdateProgressionSettingsDto,
 } from "../types";
 
+const DEFAULT_LIMIT = 20;
+
 export function useProgressionActions() {
   const [settingsDialogOpen, setSettingsDialogOpen] = useState(false);
   const [exerciseIdFilter, setExerciseIdFilter] = useState<number | "">("");
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(DEFAULT_LIMIT);
 
-  const {
-    data: settings,
-    isLoading: isSettingsLoading,
-  } = useGetProgressionSettingsQuery();
+  const { data: settings, isLoading: isSettingsLoading } =
+    useGetProgressionSettingsQuery();
 
-  const {
-    data: historyData,
-    isLoading: isHistoryLoading,
-  } = useGetProgressionHistoryQuery();
+  const isExerciseFilter = exerciseIdFilter !== "";
+
+  const { data: allHistoryData, isLoading: isAllHistoryLoading } =
+    useGetProgressionHistoryQuery(
+      { page: page + 1, limit: rowsPerPage },
+      { skip: isExerciseFilter },
+    );
+
+  const { data: exerciseHistoryData, isLoading: isExerciseHistoryLoading } =
+    useGetProgressionHistoryByExerciseQuery(
+      {
+        exerciseId: exerciseIdFilter as number,
+        page: page + 1,
+        limit: rowsPerPage,
+      },
+      { skip: !isExerciseFilter },
+    );
+
+  const historyData = isExerciseFilter ? exerciseHistoryData : allHistoryData;
+  const isHistoryLoading = isExerciseFilter
+    ? isExerciseHistoryLoading
+    : isAllHistoryLoading;
 
   const [upsertSettings, { isLoading: isUpserting }] =
     useUpsertProgressionSettingsMutation();
   const [evaluate, { isLoading: isEvaluating }] =
     useEvaluateProgressionMutation();
 
-  const allHistory: ProgressionHistoryItem[] = historyData?.data ?? [];
+  const handleExerciseFilter = useCallback((value: number | "") => {
+    setExerciseIdFilter(value);
+    setPage(0);
+  }, []);
 
-  const filteredHistory =
-    exerciseIdFilter !== ""
-      ? allHistory.filter((h) => h.exerciseId === exerciseIdFilter)
-      : allHistory;
+  const handlePageChange = useCallback((_: unknown, newPage: number) => {
+    setPage(newPage);
+  }, []);
+
+  const handleRowsPerPageChange = useCallback(
+    (e: React.ChangeEvent<HTMLInputElement>) => {
+      setRowsPerPage(parseInt(e.target.value, 10));
+      setPage(0);
+    },
+    [],
+  );
 
   const handleUpsertSettings = useCallback(
     async (dto: UpdateProgressionSettingsDto) => {
@@ -70,15 +100,20 @@ export function useProgressionActions() {
   return {
     settings: settings as ProgressionSettings | undefined,
     isSettingsLoading,
-    history: filteredHistory,
+    history: historyData?.data ?? [],
+    historyTotal: historyData?.total ?? 0,
     isHistoryLoading,
+    page,
+    rowsPerPage,
     settingsDialogOpen,
     openSettingsDialog: () => setSettingsDialogOpen(true),
     closeSettingsDialog: () => setSettingsDialogOpen(false),
     isUpserting,
     isEvaluating,
     exerciseIdFilter,
-    handleExerciseFilter: setExerciseIdFilter,
+    handleExerciseFilter,
+    handlePageChange,
+    handleRowsPerPageChange,
     handleUpsertSettings,
     handleEvaluate,
   };

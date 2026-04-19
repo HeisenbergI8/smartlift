@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import TrendingUpIcon from "@mui/icons-material/TrendingUp";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
@@ -23,6 +22,11 @@ import type { AdjustmentType, ProgressionHistoryItem } from "../types";
 type Props = {
   history: ProgressionHistoryItem[];
   isLoading: boolean;
+  total: number;
+  page: number;
+  rowsPerPage: number;
+  onPageChange: (event: unknown, newPage: number) => void;
+  onRowsPerPageChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
 };
 
 const ADJUSTMENT_LABEL: Record<AdjustmentType, string> = {
@@ -44,9 +48,15 @@ const ADJUSTMENT_COLOR: Record<
   deload: "error",
 };
 
-export default function ProgressionHistoryTable({ history, isLoading }: Props) {
-  const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+export default function ProgressionHistoryTable({
+  history,
+  isLoading,
+  total,
+  page,
+  rowsPerPage,
+  onPageChange,
+  onRowsPerPageChange,
+}: Props) {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
 
@@ -80,23 +90,15 @@ export default function ProgressionHistoryTable({ history, isLoading }: Props) {
     );
   }
 
-  const paginated = history.slice(
-    page * rowsPerPage,
-    page * rowsPerPage + rowsPerPage,
-  );
-
   const pagination = (
     <TablePagination
       component="div"
-      count={history.length}
+      count={total}
       page={page}
       rowsPerPage={rowsPerPage}
-      rowsPerPageOptions={[5, 10, 25]}
-      onPageChange={(_, newPage) => setPage(newPage)}
-      onRowsPerPageChange={(e) => {
-        setRowsPerPage(parseInt(e.target.value, 10));
-        setPage(0);
-      }}
+      rowsPerPageOptions={[10, 20, 50]}
+      onPageChange={onPageChange}
+      onRowsPerPageChange={onRowsPerPageChange}
     />
   );
 
@@ -104,7 +106,7 @@ export default function ProgressionHistoryTable({ history, isLoading }: Props) {
     return (
       <>
         <Stack spacing={1.5} sx={{ p: 2 }}>
-          {paginated.map((item) => (
+          {history.map((item) => (
             <Card
               key={item.id}
               variant="outlined"
@@ -207,7 +209,7 @@ export default function ProgressionHistoryTable({ history, isLoading }: Props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {paginated.map((item) => (
+          {history.map((item) => (
             <TableRow key={item.id} hover>
               <TableCell>{item.exercise.name}</TableCell>
               <TableCell>

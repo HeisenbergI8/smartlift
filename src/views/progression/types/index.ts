@@ -37,11 +37,22 @@ export type ProgressionHistoryItem = {
   };
 };
 
+export type GetProgressionHistoryParams = {
+  page: number;
+  limit: number;
+};
+
+export type GetProgressionHistoryByExerciseParams = {
+  exerciseId: number;
+  page: number;
+  limit: number;
+};
+
 export type ProgressionHistoryResponse = {
   data: ProgressionHistoryItem[];
-  meta: {
-    total: number;
-  };
+  total: number;
+  page: number;
+  limit: number;
 };
 
 export type EvaluateProgressionResponse = {

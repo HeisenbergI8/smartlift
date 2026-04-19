@@ -20,7 +20,10 @@ export default function ProgressionPage() {
     settings,
     isSettingsLoading,
     history,
+    historyTotal,
     isHistoryLoading,
+    page,
+    rowsPerPage,
     settingsDialogOpen,
     openSettingsDialog,
     closeSettingsDialog,
@@ -28,6 +31,8 @@ export default function ProgressionPage() {
     isEvaluating,
     exerciseIdFilter,
     handleExerciseFilter,
+    handlePageChange,
+    handleRowsPerPageChange,
     handleUpsertSettings,
     handleEvaluate,
   } = useProgressionActions();
@@ -114,6 +119,11 @@ export default function ProgressionPage() {
           <ProgressionHistoryTable
             history={history}
             isLoading={isHistoryLoading}
+            total={historyTotal}
+            page={page}
+            rowsPerPage={rowsPerPage}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleRowsPerPageChange}
           />
         </Paper>
       </Container>
