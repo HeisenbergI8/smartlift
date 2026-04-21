@@ -122,8 +122,8 @@ export default function AdjustmentHistoryTable({
                   </Typography>
                   <Chip
                     size="small"
-                    color={TRIGGER_COLOR[adj.trigger]}
-                    label={TRIGGER_LABEL[adj.trigger]}
+                    color={TRIGGER_COLOR[adj.triggerReason]}
+                    label={TRIGGER_LABEL[adj.triggerReason]}
                   />
                 </Stack>
                 <Stack direction="row" gap={1} alignItems="center" mb={1}>
@@ -155,7 +155,7 @@ export default function AdjustmentHistoryTable({
                       Carbs
                     </Typography>
                     <Typography variant="body2">
-                      {adj.previousCarbsG}→{adj.newCarbsG} g
+                      {adj.previousCarbohydratesG}→{adj.newCarbohydratesG} g
                     </Typography>
                   </Box>
                   <Box>
@@ -167,9 +167,9 @@ export default function AdjustmentHistoryTable({
                     </Typography>
                   </Box>
                 </Stack>
-                {adj.reason && (
+                {adj.notes && (
                   <Typography variant="caption" color="text.secondary">
-                    {adj.reason}
+                    {adj.notes}
                   </Typography>
                 )}
               </CardContent>
@@ -210,8 +210,8 @@ export default function AdjustmentHistoryTable({
               <TableCell>
                 <Chip
                   size="small"
-                  color={TRIGGER_COLOR[adj.trigger]}
-                  label={TRIGGER_LABEL[adj.trigger]}
+                  color={TRIGGER_COLOR[adj.triggerReason]}
+                  label={TRIGGER_LABEL[adj.triggerReason]}
                 />
               </TableCell>
               <TableCell>
@@ -222,12 +222,12 @@ export default function AdjustmentHistoryTable({
                 {adj.previousProteinG} → {adj.newProteinG}
               </TableCell>
               <TableCell>
-                {adj.previousCarbsG} → {adj.newCarbsG}
+                {adj.previousCarbohydratesG} → {adj.newCarbohydratesG}
               </TableCell>
               <TableCell>
                 {adj.previousFatsG} → {adj.newFatsG}
               </TableCell>
-              <TableCell>{adj.reason ?? "—"}</TableCell>
+              <TableCell>{adj.notes ?? "—"}</TableCell>
             </TableRow>
           ))}
         </TableBody>

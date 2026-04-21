@@ -9,9 +9,9 @@ import type {
   CreateNutritionRecommendationDto,
   DailyNutritionLog,
   DailyNutritionLogsResponse,
+  GetAdjustmentHistoryParams,
   GetDailyLogsParams,
   LogDailyNutritionDto,
-  NutritionAdjustment,
   NutritionAdjustmentsResponse,
   NutritionRecommendation,
   PlateauDetectResult,
@@ -111,12 +111,16 @@ export const nutritionApi = createApi({
       invalidatesTags: [{ type: "NutritionDailyLogs" as const, id: "LIST" }],
     }),
 
-    getNutritionAdjustmentHistory: build.query<NutritionAdjustment[], void>({
-      queryFn: async () => {
+    getNutritionAdjustmentHistory: build.query<
+      NutritionAdjustmentsResponse,
+      GetAdjustmentHistoryParams | void
+    >({
+      queryFn: async (params) => {
         try {
-          const response =
-            await dailyNutritionApiService.getAdjustmentHistory();
-          return { data: response.data };
+          const data = await dailyNutritionApiService.getAdjustmentHistory(
+            params ?? undefined,
+          );
+          return { data };
         } catch (error) {
           return { error: { message: (error as Error).message } };
         }

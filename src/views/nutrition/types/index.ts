@@ -59,13 +59,20 @@ export type LogDailyNutritionDto = {
 export type GetDailyLogsParams = {
   startDate?: string;
   endDate?: string;
+  page?: number;
+  limit?: number;
 };
 
 export type DailyNutritionLogsResponse = {
   data: DailyNutritionLog[];
-  meta: {
-    total: number;
-  };
+  total: number;
+  page: number;
+  limit: number;
+};
+
+export type GetAdjustmentHistoryParams = {
+  page?: number;
+  limit?: number;
 };
 
 export type NutritionAdjustmentTrigger =
@@ -76,17 +83,20 @@ export type NutritionAdjustmentTrigger =
 
 export type NutritionAdjustment = {
   id: number;
+  userId: number;
   nutritionRecommendationId: number;
-  trigger: NutritionAdjustmentTrigger;
+  triggerReason: NutritionAdjustmentTrigger;
   previousCaloriesKcal: number;
   newCaloriesKcal: number;
   previousProteinG: number;
   newProteinG: number;
-  previousCarbsG: number;
-  newCarbsG: number;
+  previousCarbohydratesG: number;
+  newCarbohydratesG: number;
   previousFatsG: number;
   newFatsG: number;
-  reason: string | null;
+  weeklyAvgWeightKg: number | null;
+  notes: string | null;
+  source: string;
   createdAt: string;
   nutritionRecommendation: NutritionRecommendation;
 };

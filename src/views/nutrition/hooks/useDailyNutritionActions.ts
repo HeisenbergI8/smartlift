@@ -21,7 +21,7 @@ export function useDailyNutritionActions() {
         : undefined,
     );
 
-  const { data: adjustments, isLoading: isAdjustmentsLoading } =
+  const { data: adjustmentsData, isLoading: isAdjustmentsLoading } =
     useGetNutritionAdjustmentHistoryQuery();
 
   const [logDailyNutrition, { isLoading: isLogging }] =
@@ -31,6 +31,7 @@ export function useDailyNutritionActions() {
     useDetectPlateauMutation();
 
   const logs = logsData?.data ?? [];
+  const adjustments = adjustmentsData?.data ?? [];
 
   const handleLogSubmit = useCallback(
     async (dto: LogDailyNutritionDto) => {
@@ -51,11 +52,25 @@ export function useDailyNutritionActions() {
     try {
       const result = await detectPlateau().unwrap();
       if (result.plateauDetected && result.adjustment) {
-        toast.success("Plateau detected — recommendation adjusted");
+        const newCals =
+          result.newRecommendation?.dailyCaloriesKcal.toLocaleString();
+        toast.success(
+          newCals
+            ? `Plateau detected — your target has been adjusted to ${newCals} kcal/day`
+            : "Plateau detected — your nutrition recommendation has been updated",
+        );
       } else if (result.plateauDetected) {
-        toast.info(result.reason ?? "Plateau detected — no adjustment needed");
+        toast.info(
+          "Your goal doesn't require a calorie adjustment right now — keep it up!",
+        );
+      } else if (result.reason?.toLowerCase().includes("insufficient")) {
+        toast.info(
+          "Not enough data yet — log your weight for at least 3 weeks to enable plateau detection",
+        );
       } else {
-        toast.info("No weight plateau detected");
+        toast.info(
+          "Your weight is on track — no plateau detected. Keep logging!",
+        );
       }
     } catch (err) {
       toast.error(
@@ -67,7 +82,7 @@ export function useDailyNutritionActions() {
   return {
     logs,
     isLogsLoading,
-    adjustments: adjustments ?? [],
+    adjustments,
     isAdjustmentsLoading,
     dialogOpen,
     openDialog: () => setDialogOpen(true),

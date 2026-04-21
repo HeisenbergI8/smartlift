@@ -3,9 +3,9 @@ import type {
   CreateNutritionRecommendationDto,
   DailyNutritionLog,
   DailyNutritionLogsResponse,
+  GetAdjustmentHistoryParams,
   GetDailyLogsParams,
   LogDailyNutritionDto,
-  NutritionAdjustment,
   NutritionAdjustmentsResponse,
   NutritionRecommendation,
   PlateauDetectResult,
@@ -51,6 +51,8 @@ export const dailyNutritionApiService = {
       params: {
         startDate: params?.startDate,
         endDate: params?.endDate,
+        page: params?.page ?? 1,
+        limit: params?.limit ?? 100,
       },
     });
   },
@@ -61,9 +63,17 @@ export const dailyNutritionApiService = {
     return apiClient.post<DailyNutritionLog>("/nutrition/daily-log", dto);
   },
 
-  async getAdjustmentHistory(): Promise<NutritionAdjustmentsResponse> {
+  async getAdjustmentHistory(
+    params?: GetAdjustmentHistoryParams,
+  ): Promise<NutritionAdjustmentsResponse> {
     return apiClient.get<NutritionAdjustmentsResponse>(
       "/nutrition/adjustments",
+      {
+        params: {
+          page: params?.page ?? 1,
+          limit: params?.limit ?? 100,
+        },
+      },
     );
   },
 

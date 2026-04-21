@@ -12,6 +12,7 @@ import Stack from "@mui/material/Stack";
 import Tab from "@mui/material/Tab";
 import Tabs from "@mui/material/Tabs";
 import TextField from "@mui/material/TextField";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 
 import AdjustmentHistoryTable from "../components/AdjustmentHistoryTable";
@@ -190,14 +191,22 @@ export default function NutritionPage() {
         {tab === 2 && (
           <>
             <Stack direction="row" justifyContent="flex-end" mb={2}>
-              <Button
-                variant="outlined"
-                startIcon={<TroubleshootIcon />}
-                onClick={handleDetectPlateau}
-                disabled={isDetecting}
+              <Tooltip
+                title="Analyzes your last 3 weeks of body-weight logs to detect a stall and auto-adjust your calorie target"
+                placement="left"
+                arrow
               >
-                {isDetecting ? "Detecting…" : "Detect Plateau"}
-              </Button>
+                <span>
+                  <Button
+                    variant="outlined"
+                    startIcon={<TroubleshootIcon />}
+                    onClick={handleDetectPlateau}
+                    disabled={isDetecting}
+                  >
+                    {isDetecting ? "Detecting…" : "Detect Plateau"}
+                  </Button>
+                </span>
+              </Tooltip>
             </Stack>
             <Paper
               elevation={0}
