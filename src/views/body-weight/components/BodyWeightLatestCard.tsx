@@ -10,6 +10,7 @@ import Stack from "@mui/material/Stack";
 import Typography from "@mui/material/Typography";
 
 import type { BodyWeightLog, WeightSource } from "../types";
+import { formatDate } from "@/libs/formatDate";
 
 type Props = {
   latest: BodyWeightLog | null;
@@ -99,7 +100,7 @@ export default function BodyWeightLatestCard({ latest, isLoading }: Props) {
             label="Date"
             value={
               <Typography variant="body2">
-                {new Date(latest.logDate).toLocaleDateString()}
+                {formatDate(latest.logDate)}
               </Typography>
             }
           />
@@ -133,10 +134,10 @@ export default function BodyWeightLatestCard({ latest, isLoading }: Props) {
         </Box>
       )}
 
-      {latest && !isLoading && (
+      {latest && !isLoading && (latest.updatedAt ?? latest.createdAt) && (
         <Stack direction="row" justifyContent="flex-end" mt={2}>
           <Typography variant="caption" color="text.disabled">
-            Last updated {new Date(latest.updatedAt).toLocaleDateString()}
+            Last updated {formatDate(latest.updatedAt ?? latest.createdAt)}
           </Typography>
         </Stack>
       )}

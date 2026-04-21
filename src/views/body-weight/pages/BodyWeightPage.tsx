@@ -18,6 +18,7 @@ import BodyWeightLatestCard from "../components/BodyWeightLatestCard";
 import BodyWeightTable from "../components/BodyWeightTable";
 import WeeklyAveragesChart from "../components/WeeklyAveragesChart";
 import { useBodyWeightActions } from "../hooks/useBodyWeightActions";
+import ConfirmDialog from "@/components/ConfirmDialog";
 
 export default function BodyWeightPage() {
   const [tab, setTab] = useState(0);
@@ -35,7 +36,11 @@ export default function BodyWeightPage() {
     isLogging,
     isDeleting,
     handleLogSubmit,
-    handleDelete,
+    handleDeleteRequest,
+    handleDeleteConfirm,
+    handleDeleteCancel,
+    confirmDeleteOpen,
+    isCoachMode,
     startDate,
     endDate,
     setStartDate,
@@ -126,7 +131,7 @@ export default function BodyWeightPage() {
                 logs={logs}
                 isLoading={isLogsLoading}
                 isDeleting={isDeleting}
-                onDelete={handleDelete}
+                onDeleteRequest={handleDeleteRequest}
               />
             </Paper>
           </>
@@ -145,8 +150,19 @@ export default function BodyWeightPage() {
       <BodyWeightDialog
         open={dialogOpen}
         isLoading={isLogging}
+        isCoachMode={isCoachMode}
         onClose={closeDialog}
         onSubmit={handleLogSubmit}
+      />
+
+      <ConfirmDialog
+        open={confirmDeleteOpen}
+        title="Delete Weight Log"
+        message="Are you sure you want to delete this weight log entry? This action cannot be undone."
+        confirmLabel="Delete"
+        isLoading={isDeleting}
+        onConfirm={handleDeleteConfirm}
+        onCancel={handleDeleteCancel}
       />
     </Box>
   );

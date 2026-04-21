@@ -44,7 +44,7 @@ export const bodyWeightApi = createApi({
       queryFn: async () => {
         try {
           const data = await bodyWeightApiService.getLatest();
-          return { data };
+          return { data: data ?? null };
         } catch (error) {
           return { error: { message: (error as Error).message } };
         }
@@ -85,11 +85,11 @@ export const bodyWeightApi = createApi({
       ],
     }),
 
-    deleteBodyWeightLog: build.mutation<void, number>({
+    deleteBodyWeightLog: build.mutation<null, number>({
       queryFn: async (id) => {
         try {
           await bodyWeightApiService.deleteLog(id);
-          return { data: undefined };
+          return { data: null };
         } catch (error) {
           return { error: { message: (error as Error).message } };
         }

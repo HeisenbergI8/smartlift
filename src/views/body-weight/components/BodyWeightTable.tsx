@@ -21,12 +21,13 @@ import Typography from "@mui/material/Typography";
 import { useMediaQuery, useTheme } from "@mui/material";
 
 import type { BodyWeightLog, WeightSource } from "../types";
+import { formatDate } from "@/libs/formatDate";
 
 type Props = {
   logs: BodyWeightLog[];
   isLoading: boolean;
   isDeleting: boolean;
-  onDelete: (id: number) => void;
+  onDeleteRequest: (id: number) => void;
 };
 
 const SOURCE_COLOR: Record<WeightSource, "primary" | "secondary" | "info"> = {
@@ -45,7 +46,7 @@ export default function BodyWeightTable({
   logs,
   isLoading,
   isDeleting,
-  onDelete,
+  onDeleteRequest,
 }: Props) {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -120,7 +121,7 @@ export default function BodyWeightTable({
                   mb={1}
                 >
                   <Typography variant="subtitle2" fontWeight={600}>
-                    {log.logDate}
+                    {formatDate(log.logDate)}
                   </Typography>
                   <Stack direction="row" alignItems="center" gap={1}>
                     <Typography
@@ -134,7 +135,7 @@ export default function BodyWeightTable({
                       <IconButton
                         size="small"
                         disabled={isDeleting}
-                        onClick={() => onDelete(log.id)}
+                        onClick={() => onDeleteRequest(log.id)}
                         color="error"
                       >
                         <DeleteOutlineIcon fontSize="small" />
@@ -178,7 +179,7 @@ export default function BodyWeightTable({
         <TableBody>
           {paginated.map((log) => (
             <TableRow key={log.id} hover>
-              <TableCell>{log.logDate}</TableCell>
+              <TableCell>{formatDate(log.logDate)}</TableCell>
               <TableCell>{log.weightKg}</TableCell>
               <TableCell>
                 <Chip
@@ -193,7 +194,7 @@ export default function BodyWeightTable({
                   <IconButton
                     size="small"
                     disabled={isDeleting}
-                    onClick={() => onDelete(log.id)}
+                    onClick={() => onDeleteRequest(log.id)}
                     color="error"
                   >
                     <DeleteOutlineIcon fontSize="small" />

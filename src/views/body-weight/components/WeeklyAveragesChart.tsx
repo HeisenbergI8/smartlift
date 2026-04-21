@@ -18,6 +18,7 @@ import {
 } from "recharts";
 
 import type { WeeklyAverage } from "../types";
+import { formatDate } from "@/libs/formatDate";
 
 type Props = {
   weeklyAverages: WeeklyAverage[];
@@ -36,8 +37,8 @@ export default function WeeklyAveragesChart({
 }: Props) {
   const chartData = weeklyAverages.map((w) => ({
     label: w.weekStart,
-    avg: w.averageWeightKg,
-    logs: w.logCount,
+    avg: w.avgWeightKg,
+    logs: w.entryCount,
   }));
 
   return (
@@ -126,7 +127,7 @@ export default function WeeklyAveragesChart({
               }
               labelFormatter={(label) =>
                 typeof label === "string"
-                  ? `Week of ${new Date(label).toLocaleDateString()}`
+                  ? `Week of ${formatDate(label)}`
                   : String(label)
               }
               contentStyle={{

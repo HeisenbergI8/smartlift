@@ -6,16 +6,15 @@ export type BodyWeightLog = {
   logDate: string;
   weightKg: number;
   source: WeightSource;
-  notes: string | null;
+  notes?: string | null;
   createdAt: string;
-  updatedAt: string;
+  updatedAt?: string;
 };
 
 export type WeeklyAverage = {
   weekStart: string;
-  weekEnd: string;
-  averageWeightKg: number;
-  logCount: number;
+  avgWeightKg: number;
+  entryCount: number;
 };
 
 export type LogBodyWeightDto = {
@@ -28,13 +27,15 @@ export type LogBodyWeightDto = {
 export type GetBodyWeightLogsParams = {
   startDate?: string;
   endDate?: string;
+  page?: number;
+  limit?: number;
 };
 
 export type BodyWeightLogsResponse = {
   data: BodyWeightLog[];
-  meta: {
-    total: number;
-  };
+  total: number;
+  page: number;
+  limit: number;
 };
 
 export type GetWeeklyAveragesParams = {

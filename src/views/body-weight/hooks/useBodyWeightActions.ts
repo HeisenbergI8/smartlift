@@ -8,10 +8,12 @@ import {
   useLogBodyWeightMutation,
   useDeleteBodyWeightLogMutation,
 } from "@/store/services/bodyWeightApi";
+import { useGetProfileQuery } from "@/store/services/userProfileApi";
 import type { LogBodyWeightDto } from "../types";
 
 export function useBodyWeightActions() {
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [pendingDeleteId, setPendingDeleteId] = useState<number | null>(null);
   const [startDate, setStartDate] = useState("");
   const [endDate, setEndDate] = useState("");
   const [weeksFilter, setWeeksFilter] = useState(12);
@@ -33,6 +35,9 @@ export function useBodyWeightActions() {
   const [deleteBodyWeightLog, { isLoading: isDeleting }] =
     useDeleteBodyWeightLogMutation();
 
+  const { data: profile } = useGetProfileQuery();
+  const isCoachMode = profile?.isCoachMode ?? false;
+
   const logs = logsData?.data ?? [];
 
   const handleLogSubmit = useCallback(
@@ -50,19 +55,27 @@ export function useBodyWeightActions() {
     [logBodyWeight],
   );
 
-  const handleDelete = useCallback(
-    async (id: number) => {
-      try {
-        await deleteBodyWeightLog(id).unwrap();
-        toast.success("Log entry deleted");
-      } catch (err) {
-        toast.error(
-          (err as { message?: string }).message ?? "Failed to delete entry",
-        );
-      }
-    },
-    [deleteBodyWeightLog],
-  );
+  const handleDeleteRequest = useCallback((id: number) => {
+    setPendingDeleteId(id);
+  }, []);
+
+  const handleDeleteConfirm = useCallback(async () => {
+    if (pendingDeleteId === null) return;
+    try {
+      await deleteBodyWeightLog(pendingDeleteId).unwrap();
+      toast.success("Log entry deleted");
+    } catch (err) {
+      toast.error(
+        (err as { message?: string }).message ?? "Failed to delete entry",
+      );
+    } finally {
+      setPendingDeleteId(null);
+    }
+  }, [deleteBodyWeightLog, pendingDeleteId]);
+
+  const handleDeleteCancel = useCallback(() => {
+    setPendingDeleteId(null);
+  }, []);
 
   return {
     logs,
@@ -77,7 +90,11 @@ export function useBodyWeightActions() {
     isLogging,
     isDeleting,
     handleLogSubmit,
-    handleDelete,
+    handleDeleteRequest,
+    handleDeleteConfirm,
+    handleDeleteCancel,
+    confirmDeleteOpen: pendingDeleteId !== null,
+    isCoachMode,
     startDate,
     endDate,
     setStartDate,

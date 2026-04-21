@@ -25,6 +25,7 @@ export default function BodyWeightFilters({
         value={startDate}
         onChange={(e) => onStartDateChange(e.target.value)}
         InputLabelProps={{ shrink: true }}
+        inputProps={{ style: { colorScheme: "dark" } }}
         sx={{ width: 160 }}
       />
       <TextField
@@ -34,6 +35,7 @@ export default function BodyWeightFilters({
         value={endDate}
         onChange={(e) => onEndDateChange(e.target.value)}
         InputLabelProps={{ shrink: true }}
+        inputProps={{ style: { colorScheme: "dark" } }}
         sx={{ width: 160 }}
       />
     </Stack>

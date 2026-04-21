@@ -8,14 +8,14 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
-import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 
-import type { LogBodyWeightDto, WeightSource } from "../types";
+import type { LogBodyWeightDto } from "../types";
 
 type Props = {
   open: boolean;
   isLoading: boolean;
+  isCoachMode: boolean;
   onClose: () => void;
   onSubmit: (dto: LogBodyWeightDto) => void;
 };
@@ -23,7 +23,6 @@ type Props = {
 type FormValues = {
   logDate: string;
   weightKg: string;
-  source: WeightSource;
   notes: string;
 };
 
@@ -32,13 +31,13 @@ const today = () => new Date().toISOString().split("T")[0];
 const DEFAULT_VALUES: FormValues = {
   logDate: today(),
   weightKg: "",
-  source: "manual",
   notes: "",
 };
 
 export default function BodyWeightDialog({
   open,
   isLoading,
+  isCoachMode,
   onClose,
   onSubmit,
 }: Props) {
@@ -55,8 +54,8 @@ export default function BodyWeightDialog({
   const handleFormSubmit = (values: FormValues) => {
     onSubmit({
       logDate: values.logDate,
-      weightKg: Number(values.weightKg),
-      source: values.source,
+      weightKg: Math.round(parseFloat(values.weightKg) * 10) / 10,
+      source: isCoachMode ? "coach" : "manual",
       notes: values.notes || undefined,
     });
   };
@@ -84,13 +83,23 @@ export default function BodyWeightDialog({
                 size="small"
                 type="date"
                 InputLabelProps={{ shrink: true }}
+                inputProps={{ style: { colorScheme: "dark" } }}
               />
             )}
           />
           <Controller
             name="weightKg"
             control={control}
-            rules={{ required: true, min: 20 }}
+            rules={{
+              required: "Weight is required",
+              validate: (v) => {
+                const n = parseFloat(v);
+                if (isNaN(n)) return "Enter a valid weight";
+                if (n < 20) return "Minimum weight is 20 kg";
+                if (n > 500) return "Maximum weight is 500 kg";
+                return true;
+              },
+            }}
             render={({ field, fieldState }) => (
               <TextField
                 {...field}
@@ -99,19 +108,12 @@ export default function BodyWeightDialog({
                 type="number"
                 inputProps={{ step: 0.1, min: 20, max: 500 }}
                 error={!!fieldState.error}
-                helperText={fieldState.error ? "Weight is required" : undefined}
+                helperText={
+                  fieldState.error
+                    ? fieldState.error.message
+                    : "Decimals allowed, e.g. 80.5"
+                }
               />
-            )}
-          />
-          <Controller
-            name="source"
-            control={control}
-            render={({ field }) => (
-              <TextField {...field} label="Source" size="small" select>
-                <MenuItem value="manual">Manual</MenuItem>
-                <MenuItem value="smart_scale">Smart Scale</MenuItem>
-                <MenuItem value="coach">Coach</MenuItem>
-              </TextField>
             )}
           />
           <Controller
