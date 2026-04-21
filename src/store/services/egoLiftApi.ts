@@ -45,11 +45,11 @@ export const egoLiftApi = createApi({
       ],
     }),
 
-    dismissEgoLiftAlert: build.mutation<void, number>({
+    dismissEgoLiftAlert: build.mutation<null, number>({
       queryFn: async (alertId) => {
         try {
           await egoLiftApiService.dismissAlert(alertId);
-          return { data: undefined };
+          return { data: null };
         } catch (error) {
           return { error: { message: (error as Error).message } };
         }
