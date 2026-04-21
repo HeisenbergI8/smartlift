@@ -111,11 +111,11 @@ export const workoutPlanApi = createApi({
       ],
     }),
 
-    deleteWorkoutPlan: build.mutation<void, number>({
+    deleteWorkoutPlan: build.mutation<null, number>({
       queryFn: async (id) => {
         try {
           await workoutPlanApiService.remove(id);
-          return { data: undefined };
+          return { data: null };
         } catch (error) {
           return { error: { message: (error as Error).message } };
         }
