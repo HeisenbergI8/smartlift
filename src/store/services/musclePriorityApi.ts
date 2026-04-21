@@ -47,11 +47,11 @@ export const musclePriorityApi = createApi({
       invalidatesTags: [{ type: "MusclePriorities", id: "LIST" }],
     }),
 
-    deletePriority: builder.mutation<void, number>({
+    deletePriority: builder.mutation<null, number>({
       queryFn: async (muscleGroupId) => {
         try {
           await musclePriorityApiService.deletePriority(muscleGroupId);
-          return { data: undefined };
+          return { data: null };
         } catch (error) {
           return { error: { message: (error as Error).message } };
         }
