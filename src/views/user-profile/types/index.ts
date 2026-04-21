@@ -22,6 +22,7 @@ export type UserProfile = {
   activityLevel: ActivityLevel | null;
   trainingMethod: TrainingMethod | null;
   trainingDaysPerWeek: number | null;
+  isCoachMode?: boolean;
   createdAt: string;
   updatedAt: string;
 };
