@@ -105,51 +105,51 @@ export default function DashboardOverviewCards({ overview, isLoading }: Props) {
     {
       icon: <MonitorWeightIcon />,
       label: "Body Weight",
-      value: overview?.latestBodyWeight
-        ? `${overview.latestBodyWeight.weightKg} kg`
+      value: overview?.latestWeight
+        ? `${overview.latestWeight.weightKg} kg`
         : "—",
-      sub: overview?.latestBodyWeight
-        ? `as of ${new Date(overview.latestBodyWeight.logDate).toLocaleDateString()}`
+      sub: overview?.latestWeight
+        ? `as of ${new Date(overview.latestWeight.logDate).toLocaleDateString()}`
         : "No data",
     },
     {
       icon: <FitnessCenterIcon />,
       label: "Active Plan",
-      value: overview?.activeWorkoutPlan?.name ?? "—",
-      sub: overview?.activeWorkoutPlan
-        ? `${overview.activeWorkoutPlan.daysPerWeek} days / week`
+      value: overview?.activePlan?.name ?? "—",
+      sub: overview?.activePlan
+        ? `${overview.activePlan.daysPerWeek} days / week`
         : "No active plan",
     },
     {
       icon: <RestaurantMenuIcon />,
       label: "Calorie Target",
-      value: overview?.activeNutritionRecommendation
-        ? `${overview.activeNutritionRecommendation.dailyCaloriesKcal.toLocaleString()} kcal`
+      value: overview?.activeRecommendation
+        ? `${overview.activeRecommendation.dailyCaloriesKcal.toLocaleString()} kcal`
         : "—",
-      sub: overview?.activeNutritionRecommendation
-        ? `${overview.activeNutritionRecommendation.proteinG} g protein`
+      sub: overview?.activeRecommendation
+        ? `${overview.activeRecommendation.proteinG} g protein`
         : "No recommendation",
     },
     {
       icon: <EventAvailableIcon />,
       label: "Consistency Score",
-      value: overview?.latestKpiSnapshot
-        ? `${overview.latestKpiSnapshot.consistencyScore}%`
+      value: overview?.latestSnapshot
+        ? `${overview.latestSnapshot.consistencyScore}%`
         : "—",
-      sub: overview?.latestKpiSnapshot
-        ? `Streak: ${overview.latestKpiSnapshot.weeklyStreak} weeks`
+      sub: overview?.latestSnapshot
+        ? `Streak: ${overview.latestSnapshot.weeklyStreak} weeks`
         : "No snapshot",
     },
     {
       icon: <NotificationsIcon />,
       label: "Unread Notifications",
-      value: String(overview?.unreadNotificationsCount ?? 0),
+      value: String(overview?.unreadNotifications ?? 0),
       sub: "pending alerts",
     },
     {
       icon: <WarningAmberIcon />,
       label: "Ego-Lift Alerts",
-      value: String(overview?.activeEgoLiftAlertsCount ?? 0),
+      value: String(overview?.activeEgoAlerts ?? 0),
       sub: "active alerts",
     },
   ];

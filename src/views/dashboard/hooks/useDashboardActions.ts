@@ -62,7 +62,7 @@ export function useDashboardActions() {
     isConsistencyLoading,
     nutritionAdherence: nutritionAdherence ?? null,
     isAdherenceLoading,
-    kpiSnapshots: kpiSnapshots ?? [],
+    kpiSnapshots: kpiSnapshots?.data ?? [],
     isSnapshotsLoading,
     isCreatingSnapshot,
     handleCreateSnapshot,

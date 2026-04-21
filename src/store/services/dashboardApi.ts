@@ -9,6 +9,7 @@ import type {
   GetWeightTrendParams,
   GetWorkoutConsistencyParams,
   KpiSnapshot,
+  KpiSnapshotsResponse,
   NutritionAdherenceResponse,
   StrengthProgressResponse,
   WeightTrendResponse,
@@ -99,7 +100,10 @@ export const dashboardApi = createApi({
       ],
     }),
 
-    getKpiSnapshots: build.query<KpiSnapshot[], GetKpiSnapshotsParams | void>({
+    getKpiSnapshots: build.query<
+      KpiSnapshotsResponse,
+      GetKpiSnapshotsParams | void
+    >({
       queryFn: async (params) => {
         try {
           const data = await dashboardApiService.getKpiSnapshots(

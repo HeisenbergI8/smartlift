@@ -1,18 +1,30 @@
+export type ActiveRecommendation = {
+  id: number;
+  userId: number;
+  source: string;
+  dailyCaloriesKcal: number;
+  proteinG: number;
+  carbohydratesG: number;
+  fatsG: number;
+  isActive: boolean;
+  effectiveFrom: string;
+  effectiveTo: string | null;
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+};
+
 export type DashboardOverview = {
-  latestBodyWeight: { weightKg: number; logDate: string } | null;
-  latestKpiSnapshot: KpiSnapshot | null;
-  activeNutritionRecommendation: {
-    dailyCaloriesKcal: number;
-    proteinG: number;
-    carbohydratesG: number;
-    fatsG: number;
-  } | null;
-  activeWorkoutPlan: { name: string; daysPerWeek: number } | null;
-  unreadNotificationsCount: number;
-  activeEgoLiftAlertsCount: number;
+  latestWeight: { weightKg: number; logDate: string } | null;
+  latestSnapshot: KpiSnapshot | null;
+  activeRecommendation: ActiveRecommendation | null;
+  activePlan: { id: number; name: string; daysPerWeek: number } | null;
+  unreadNotifications: number;
+  activeEgoAlerts: number;
 };
 
 export type StrengthRecord = {
+  exerciseId: number;
   exerciseName: string;
   currentMaxWeightKg: number;
   achievedAt: string;
@@ -78,6 +90,15 @@ export type KpiSnapshot = {
 export type GetKpiSnapshotsParams = {
   startDate?: string;
   endDate?: string;
+  page?: number;
+  limit?: number;
+};
+
+export type KpiSnapshotsResponse = {
+  data: KpiSnapshot[];
+  total: number;
+  page: number;
+  limit: number;
 };
 
 export type GetWeightTrendParams = {
