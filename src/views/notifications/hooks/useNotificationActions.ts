@@ -49,7 +49,7 @@ export function useNotificationActions() {
   const allNotifications = notificationsData?.data ?? [];
   const total = notificationsData?.total ?? 0;
   const unreadCount = unreadCountData?.count ?? 0;
-  const preferences = preferencesData?.data ?? [];
+  const preferences = preferencesData ?? [];
 
   const filteredNotifications = allNotifications.filter((n) => {
     if (typeFilter !== "" && n.type !== typeFilter) return false;

@@ -12,9 +12,12 @@ export type Notification = {
   userId: number;
   type: NotificationType;
   title: string;
-  body: string;
+  message: string;
+  referenceType: string | null;
+  referenceId: number | null;
   isRead: boolean;
   readAt: string | null;
+  scheduledAt: string | null;
   createdAt: string;
 };
 
@@ -23,11 +26,15 @@ export type NotificationPreference = {
   userId: number;
   type: NotificationType;
   isEnabled: boolean;
+  createdAt: string;
+  updatedAt: string;
 };
 
 export type NotificationsResponse = {
   data: Notification[];
   total: number;
+  page: number;
+  limit: number;
 };
 
 export type GetNotificationsParams = {
@@ -43,9 +50,7 @@ export type MarkAllReadResponse = {
   updated: number;
 };
 
-export type PreferencesResponse = {
-  data: NotificationPreference[];
-};
+export type PreferencesResponse = NotificationPreference[];
 
 export type UpdateNotificationPrefsDto = {
   type: NotificationType;

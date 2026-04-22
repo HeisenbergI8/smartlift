@@ -57,7 +57,7 @@ export default function NotificationsFilters({
   const activeCount =
     (typeFilter !== "" ? 1 : 0) + (readFilter !== "all" ? 1 : 0);
 
-  const filterControls = (
+  const filterControls = (inDrawer = false) => (
     <Stack direction={isMobile ? "column" : "row"} gap={2} flexWrap="wrap">
       <FormControl size="small" sx={{ minWidth: 200 }}>
         <InputLabel id="notifications-type-filter-label">Type</InputLabel>
@@ -68,6 +68,7 @@ export default function NotificationsFilters({
           onChange={(e) =>
             onTypeChange(e.target.value as NotificationType | "")
           }
+          MenuProps={inDrawer ? { disablePortal: true } : undefined}
         >
           <MenuItem value="">All Types</MenuItem>
           {NOTIFICATION_TYPES.map((type) => (
@@ -85,6 +86,7 @@ export default function NotificationsFilters({
           label="Status"
           value={readFilter}
           onChange={(e) => onReadFilterChange(e.target.value as ReadFilter)}
+          MenuProps={inDrawer ? { disablePortal: true } : undefined}
         >
           <MenuItem value="all">All</MenuItem>
           <MenuItem value="unread">Unread</MenuItem>
@@ -135,7 +137,7 @@ export default function NotificationsFilters({
             </Typography>
           </Box>
           <Box sx={{ px: 2 }}>
-            <Box sx={{ mb: 2 }}>{filterControls}</Box>
+            <Box sx={{ mb: 2 }}>{filterControls(true)}</Box>
             <Stack direction="row" gap={1} justifyContent="flex-end">
               {activeCount > 0 && (
                 <Button
@@ -166,7 +168,7 @@ export default function NotificationsFilters({
 
   return (
     <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-      {filterControls}
+      {filterControls()}
     </Box>
   );
 }

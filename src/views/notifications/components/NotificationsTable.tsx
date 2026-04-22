@@ -180,7 +180,7 @@ export default function NotificationsTable({
                   color="text.secondary"
                   sx={{ mb: 1, lineHeight: 1.5 }}
                 >
-                  {n.body}
+                  {n.message}
                 </Typography>
 
                 <Divider sx={{ mb: 1 }} />
@@ -245,7 +245,7 @@ export default function NotificationsTable({
               <TableCell
                 sx={{ maxWidth: 320, whiteSpace: "normal", lineHeight: 1.4 }}
               >
-                {n.body}
+                {n.message}
               </TableCell>
               <TableCell align="center">
                 {n.isRead ? (

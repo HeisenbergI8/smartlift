@@ -8,7 +8,6 @@ import type {
   UnreadCountResponse,
   MarkAllReadResponse,
   Notification,
-  PreferencesResponse,
   NotificationPreference,
   UpdateNotificationPrefsDto,
 } from "@/views/notifications/types";
@@ -85,7 +84,7 @@ export const notificationsApi = createApi({
       ],
     }),
 
-    getPreferences: build.query<PreferencesResponse, void>({
+    getPreferences: build.query<NotificationPreference[], void>({
       queryFn: async () => {
         try {
           const data = await notificationsApiService.getPreferences();
@@ -95,9 +94,9 @@ export const notificationsApi = createApi({
         }
       },
       providesTags: (result) =>
-        result?.data
+        result
           ? [
-              ...result.data.map(({ id }) => ({
+              ...result.map(({ id }) => ({
                 type: "NotificationPreferences" as const,
                 id,
               })),
