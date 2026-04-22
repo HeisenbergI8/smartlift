@@ -10,26 +10,20 @@ export type Milestone = {
   name: string;
   description: string;
   category: MilestoneCategory;
-  targetValue: number;
-  unit: string;
+  iconUrl: string | null;
+  createdAt: string;
 };
 
 export type UserMilestone = {
   id: number;
   userId: number;
   milestoneId: number;
-  earnedAt: string;
+  achievedAt: string;
   milestone: Milestone;
 };
 
-export type MilestonesResponse = {
-  data: Milestone[];
-};
+export type MilestonesResponse = Milestone[];
 
-export type UserMilestonesResponse = {
-  data: UserMilestone[];
-};
+export type UserMilestonesResponse = UserMilestone[];
 
-export type CheckMilestonesResponse = {
-  data: UserMilestone[];
-};
+export type CheckMilestonesResponse = Milestone[];

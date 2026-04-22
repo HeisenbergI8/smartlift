@@ -23,9 +23,9 @@ export const milestonesApi = createApi({
         }
       },
       providesTags: (result) =>
-        result?.data
+        result
           ? [
-              ...result.data.map(({ id }) => ({
+              ...result.map(({ id }) => ({
                 type: "Milestones" as const,
                 id,
               })),
@@ -44,9 +44,9 @@ export const milestonesApi = createApi({
         }
       },
       providesTags: (result) =>
-        result?.data
+        result
           ? [
-              ...result.data.map(({ id }) => ({
+              ...result.map(({ id }) => ({
                 type: "UserMilestones" as const,
                 id,
               })),

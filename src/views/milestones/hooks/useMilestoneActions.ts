@@ -23,8 +23,8 @@ export function useMilestoneActions() {
   const [checkMilestones, { isLoading: isChecking }] =
     useCheckAndAwardMilestonesMutation();
 
-  const allMilestones: Milestone[] = milestonesData?.data ?? [];
-  const userMilestones: UserMilestone[] = userMilestonesData?.data ?? [];
+  const allMilestones: Milestone[] = milestonesData ?? [];
+  const userMilestones: UserMilestone[] = userMilestonesData ?? [];
   const earnedIds = new Set(userMilestones.map((um) => um.milestoneId));
 
   const filteredMilestones =
@@ -35,7 +35,7 @@ export function useMilestoneActions() {
   const handleCheck = useCallback(async () => {
     try {
       const result = await checkMilestones().unwrap();
-      const count = result.data.length;
+      const count = result.length;
       if (count > 0) {
         toast.success(
           `🏅 ${count} new milestone${count > 1 ? "s" : ""} awarded!`,

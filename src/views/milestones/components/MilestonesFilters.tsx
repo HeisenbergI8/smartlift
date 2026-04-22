@@ -39,7 +39,7 @@ export default function MilestonesFilters({
 
   const activeCount = categoryFilter !== "" ? 1 : 0;
 
-  const filterControl = (
+  const filterControl = (inDrawer = false) => (
     <FormControl size="small" sx={{ minWidth: 220 }}>
       <InputLabel id="milestones-category-filter-label">Category</InputLabel>
       <Select
@@ -49,6 +49,7 @@ export default function MilestonesFilters({
         onChange={(e) =>
           onCategoryChange(e.target.value as MilestoneCategory | "")
         }
+        MenuProps={inDrawer ? { disablePortal: true } : undefined}
       >
         <MenuItem value="">All Categories</MenuItem>
         {(Object.keys(CATEGORY_LABELS) as MilestoneCategory[]).map((cat) => (
@@ -106,7 +107,7 @@ export default function MilestonesFilters({
             </Typography>
           </Box>
           <Box sx={{ px: 2 }}>
-            <Box sx={{ mb: 2 }}>{filterControl}</Box>
+            <Box sx={{ mb: 2 }}>{filterControl(true)}</Box>
             <Stack direction="row" gap={1} justifyContent="flex-end">
               {activeCount > 0 && (
                 <Button
@@ -134,7 +135,7 @@ export default function MilestonesFilters({
 
   return (
     <Box sx={{ display: "flex", gap: 2, flexWrap: "wrap" }}>
-      {filterControl}
+      {filterControl()}
     </Box>
   );
 }

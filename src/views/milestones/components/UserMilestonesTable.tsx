@@ -155,7 +155,7 @@ export default function UserMilestonesTable({
                     sx={{ fontSize: 13, color: "warning.main" }}
                   />
                   <Typography variant="caption" color="text.disabled">
-                    Earned {new Date(um.earnedAt).toLocaleDateString()}
+                    Earned {new Date(um.achievedAt).toLocaleDateString()}
                   </Typography>
                 </Stack>
               </CardContent>
@@ -201,7 +201,7 @@ export default function UserMilestonesTable({
                 {um.milestone.description}
               </TableCell>
               <TableCell align="right">
-                {new Date(um.earnedAt).toLocaleDateString()}
+                {new Date(um.achievedAt).toLocaleDateString()}
               </TableCell>
             </TableRow>
           ))}

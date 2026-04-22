@@ -154,12 +154,8 @@ export default function MilestonesTable({
                     />
                   </Stack>
 
-                  <Typography variant="body2" color="text.secondary" mb={0.75}>
+                  <Typography variant="body2" color="text.secondary">
                     {milestone.description}
-                  </Typography>
-
-                  <Typography variant="caption" color="text.disabled">
-                    Target: {milestone.targetValue} {milestone.unit}
                   </Typography>
                 </CardContent>
               </Card>
@@ -181,10 +177,6 @@ export default function MilestonesTable({
             <TableCell sx={{ textTransform: "uppercase" }}>
               Description
             </TableCell>
-            <TableCell align="right" sx={{ textTransform: "uppercase" }}>
-              Target
-            </TableCell>
-            <TableCell sx={{ textTransform: "uppercase" }}>Unit</TableCell>
             <TableCell align="center" sx={{ textTransform: "uppercase" }}>
               Status
             </TableCell>
@@ -208,8 +200,6 @@ export default function MilestonesTable({
                 >
                   {milestone.description}
                 </TableCell>
-                <TableCell align="right">{milestone.targetValue}</TableCell>
-                <TableCell>{milestone.unit}</TableCell>
                 <TableCell align="center">
                   {earned ? (
                     <Chip size="small" color="success" label="Earned" />
