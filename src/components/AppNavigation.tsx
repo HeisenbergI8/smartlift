@@ -31,6 +31,7 @@ import LocalDiningIcon from "@mui/icons-material/LocalDining";
 import TrackChangesIcon from "@mui/icons-material/TrackChanges";
 import MilitaryTechIcon from "@mui/icons-material/MilitaryTech";
 import LogoutIcon from "@mui/icons-material/Logout";
+import Image from "next/image";
 import { clearAccessToken } from "@/libs/authToken";
 import { useGetMeQuery } from "@/store/services/authApi";
 
@@ -296,7 +297,26 @@ function SidebarNav({
         },
       }}
     >
-      <Toolbar />
+      <Toolbar
+        sx={{
+          justifyContent: mini ? "center" : "flex-start",
+          px: mini ? 0 : 2,
+          gap: 1,
+        }}
+      >
+        <Image
+          src="/logo.png"
+          alt="SmartLift logo"
+          width={mini ? 36 : 48}
+          height={mini ? 36 : 48}
+          style={{ width: "auto", height: mini ? 36 : 48 }}
+        />
+        {!mini && (
+          <Typography fontWeight={800} fontSize={15} noWrap>
+            SmartLift
+          </Typography>
+        )}
+      </Toolbar>
       <Box sx={{ flex: 1, overflowY: "auto", overflowX: "hidden" }}>
         {GROUPS.map((group) => (
           <Box key={group.label} sx={{ mb: 1 }}>

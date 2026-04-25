@@ -19,8 +19,8 @@ import Stack from "@mui/material/Stack";
 import Toolbar from "@mui/material/Toolbar";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
+import Image from "next/image";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
-import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import LogoutIcon from "@mui/icons-material/Logout";
 import NotificationsNoneIcon from "@mui/icons-material/NotificationsNone";
 import PersonIcon from "@mui/icons-material/Person";
@@ -333,20 +333,13 @@ export default function AppHeader() {
           gap={1}
           sx={{ display: { xs: "flex", sm: "none" } }}
         >
-          <Box
-            sx={{
-              width: 28,
-              height: 28,
-              borderRadius: 1,
-              bgcolor: "primary.main",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              flexShrink: 0,
-            }}
-          >
-            <FitnessCenterIcon sx={{ fontSize: 16, color: "#000" }} />
-          </Box>
+          <Image
+            src="/logo.png"
+            alt="SmartLift logo"
+            width={28}
+            height={28}
+            style={{ width: "auto", height: 28 }}
+          />
           <Typography fontWeight={800} fontSize={15} noWrap>
             SmartLift
           </Typography>
