@@ -18,6 +18,10 @@ export const metadata: Metadata = {
   title: "SmartLift",
   description:
     "Intelligent fitness tracking and workout management. Log workouts, track personal records, and get smart progression recommendations.",
+  icons: {
+    icon: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
