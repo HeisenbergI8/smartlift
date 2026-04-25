@@ -95,15 +95,9 @@ export default function RegisterForm({ onSubmit, isLoading, error }: Props) {
 
   return (
     <form onSubmit={handleSubmit(onFormSubmit)} noValidate>
-      <Stack spacing={2.5}>
+      <Stack spacing={2}>
         {error && <Alert severity="error">{error}</Alert>}
-        <Box
-          sx={{
-            display: "flex",
-            gap: 2,
-            flexDirection: { xs: "column", sm: "row" },
-          }}
-        >
+        <Box sx={{ display: "flex", gap: 2 }}>
           <TextField
             {...register("firstName")}
             label="First Name"
